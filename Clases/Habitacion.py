@@ -18,7 +18,17 @@ while True:
     if continuar != "s":
         break
 
+
 print("\nListado de habitaciones cargadas:")
 for h in habitaciones:
-    print(h)
+    print(f"""
+    Código: {h['codigo_habitacion']}
+    Nombre: {h['nombre']}
+    Descripción: {h['descripcion']}
+    Capacidad: {h['capacidad']} persona(s)
+    Precio por noche: ${h['precio_noche']:.2f}
+    Activa: {"Sí" if h['activa'] else "No"}
+    Limpieza: {"Limpia" if h['estado_limpieza'] else "Pendiente"}
+    """)
+    
 print(f"\nTotal de habitaciones cargadas: {len(habitaciones)}")
