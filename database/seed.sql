@@ -4,7 +4,7 @@
 -- Objetivo : Ejecutar todos los inserts iniciales del proyecto.
 -- ============================================================
 
-USE `hotel_reservas`;
+USE `hotel_hunter`;
 
 -- Opcional: desactivar restricciones de FK mientras insertamos
 SET @OLD_FOREIGN_KEY_CHECKS = @@FOREIGN_KEY_CHECKS;

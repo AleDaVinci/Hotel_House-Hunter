@@ -4,7 +4,7 @@
 -- Objetivo : Cargar los roles básicos del sistema hotelero.
 -- ============================================================
 
-USE `hotel_reservas`;
+USE `hotel_hunter`;
 
 INSERT INTO `rol` (`nombre`, `descripcion`, `es_activo`)
 VALUES

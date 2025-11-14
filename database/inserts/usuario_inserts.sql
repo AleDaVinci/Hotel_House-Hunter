@@ -4,7 +4,7 @@
 -- Objetivo : Crear un usuario administrador inicial para el sistema.
 -- ============================================================
 
-USE `hotel_reservas`;
+USE `hotel_hunter`;
 
 INSERT INTO `usuario`
   (`id_rol`, `nombre`, `apellido`, `email`, `password_hash`, `telefono`, `es_activo`)

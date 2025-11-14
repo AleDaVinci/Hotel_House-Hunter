@@ -4,7 +4,7 @@
 -- Objetivo : Cargar amenities .
 -- ============================================================
 
-USE `hotel_reservas`;
+USE `hotel_hunter`;
 
 INSERT INTO `amenidad`
   (`nombre`, `descripcion`, `icono`, `es_activa`)

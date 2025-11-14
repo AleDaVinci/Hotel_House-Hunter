@@ -4,7 +4,7 @@
 -- Objetivo : Cargar promociones de temporada de verano e invierno.
 -- ============================================================
 
-USE `hotel_reservas`;
+USE `hotel_hunter`;
 
 INSERT INTO `promocion`
   (`id_tarifa`, `nombre`, `descripcion`,

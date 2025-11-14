@@ -4,7 +4,7 @@
 -- Objetivo : Relacionar habitaciones con amenities .
 -- ============================================================
 
-USE `hotel_reservas`;
+USE `hotel_hunter`;
 
 INSERT INTO `habitacion_amenidad` (`id_habitacion`, `id_amenidad`)
 VALUES

@@ -4,7 +4,7 @@
 -- Objetivo : Cargar habitaciones (2 single, 2 dobles, 2 triples, 2 cuádruples).
 -- ============================================================
 
-USE `hotel_reservas`;
+USE `hotel_hunter`;
 
 INSERT INTO `habitacion`
   (`codigo`, `nombre`, `descripcion`,

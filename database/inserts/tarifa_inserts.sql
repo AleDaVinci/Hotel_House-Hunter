@@ -4,7 +4,7 @@
 -- Objetivo : Cargar tarifas base reembolsable y no reembolsable.
 -- ============================================================
 
-USE `hotel_reservas`;
+USE `hotel_hunter`;
 
 INSERT INTO `tarifa`
   (`nombre`, `descripcion`, `monto_noche`, `moneda`,
