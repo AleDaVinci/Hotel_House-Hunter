@@ -452,3 +452,9 @@ body {
   border-radius: 0.7rem;
   margin-bottom: 1rem;
 }
+
+.campo-error {
+  border: 1px solid #ff4d4d !important;
+  box-shadow: 0 0 5px rgba(255,0,0,0.6);
+}
+

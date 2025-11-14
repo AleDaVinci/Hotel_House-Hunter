@@ -14,6 +14,7 @@
 from flask import Flask
 from app.routes.main_routes import main_bp  # importamos el blueprint "main"
 from app.routes.auth_routes import auth_bp
+from app.routes.reserva_routes import reserva_bp
 
 # Crear instancia de la aplicación Flask
 app = Flask(__name__)
@@ -25,6 +26,7 @@ app.secret_key = "clave-super-secreta-cambiar-en-produccion"
 # Registrar el blueprint con las rutas principales
 app.register_blueprint(main_bp)
 app.register_blueprint(auth_bp)
+app.register_blueprint(reserva_bp)
 
 
 if __name__ == "__main__":
