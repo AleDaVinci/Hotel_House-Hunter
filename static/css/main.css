@@ -1,0 +1,245 @@
+/* -----------------------------------------------------------------------------
+   Archivo: static/css/main.css
+   Responsabilidad:
+     - Definir estilos globales de la aplicación web.
+     - Estilos para el navbar, layout base y pantalla de login.
+   Alcance:
+     - Se utiliza en todas las plantillas a través de base.html.
+ ----------------------------------------------------------------------------- */
+
+/* Reset sencillo */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: #ffffff;
+}
+
+/* Layout general */
+.page-content {
+  min-height: 100vh;
+}
+
+/* NAVBAR */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 64px;
+  padding: 0 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  backdrop-filter: blur(10px);
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 10;
+}
+
+.navbar__logo {
+  display: flex;
+  align-items: center;
+}
+
+.navbar__brand {
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.navbar__nav {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.navbar__link {
+  text-decoration: none;
+  color: #ffffff;
+  font-size: 0.95rem;
+  opacity: 0.9;
+}
+
+.navbar__link:hover {
+  opacity: 1;
+}
+
+.navbar__search {
+  display: flex;
+  align-items: center;
+}
+
+.navbar__search-input {
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  border: none;
+  outline: none;
+  font-size: 0.9rem;
+}
+
+/* Usuario + botones */
+.navbar__user {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.navbar__user-name {
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+/* Botones genéricos */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  text-decoration: none;
+  font-size: 0.9rem;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn--primary {
+  background: #2563eb; /* azul */
+  color: #ffffff;
+}
+
+.btn--primary:hover {
+  background: #1d4ed8;
+}
+
+.btn--outline {
+  background: transparent;
+  border-color: #e5e7eb;
+  color: #e5e7eb;
+}
+
+.btn--outline:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.btn--ghost {
+  background: transparent;
+  color: #e5e7eb;
+}
+
+.btn--ghost:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.btn--full {
+  width: 100%;
+}
+
+/* ---------------------- PANTALLA DE LOGIN ---------------------- */
+
+/* Clase en el <body> para página de login */
+.page--login {
+  /* Acá pones tu imagen de fondo del hotel */
+  background-image: url("../img/hotel-bg.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* Contenedor que ocupa toda la altura (menos navbar) */
+.login-hero {
+  position: relative;
+  min-height: 100vh;
+  padding-top: 64px; /* espacio para navbar fijo */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Overlay oscuro sobre la imagen */
+.login-hero__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(0, 0, 0, 0.7),
+    rgba(15, 23, 42, 0.8)
+  );
+  z-index: 0;
+}
+
+/* Tarjeta de login */
+.login-card {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 400px;
+  padding: 2.5rem 2rem;
+  border-radius: 1.25rem;
+  background: rgba(15, 23, 42, 0.9);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(12px);
+}
+
+.login-card__title {
+  margin: 0 0 0.5rem;
+  font-size: 1.6rem;
+}
+
+.login-card__subtitle {
+  margin: 0 0 1.5rem;
+  font-size: 0.95rem;
+  opacity: 0.9;
+}
+
+.login-card__footer {
+  margin-top: 1.5rem;
+  font-size: 0.9rem;
+  text-align: center;
+  opacity: 0.9;
+}
+
+.login-card__link {
+  color: #60a5fa;
+  text-decoration: none;
+}
+
+.login-card__link:hover {
+  text-decoration: underline;
+}
+
+/* Formulario */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.form-group label {
+  font-size: 0.85rem;
+  opacity: 0.9;
+}
+
+.form-group input {
+  padding: 0.55rem 0.7rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(148, 163, 184, 0.6);
+  outline: none;
+  font-size: 0.9rem;
+  color: #0f172a;
+}
+
+.form-group input:focus {
+  border-color: #60a5fa;
+  box-shadow: 0 0 0 1px rgba(96, 165, 250, 0.5);
+}

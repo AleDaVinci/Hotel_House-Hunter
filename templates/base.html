@@ -1,0 +1,70 @@
+{# -----------------------------------------------------------------------------
+  Archivo: templates/base.html
+  Responsabilidad:
+    - Plantilla base para todas las vistas de la aplicación.
+    - Define el layout general: <head>, navbar y estructura de la página.
+  Alcance:
+    - Otras plantillas (login, signup, mis reservas, etc.) extienden de ésta.
+    - Incluye un navbar que cambia según si el usuario está logueado o no.
+ ----------------------------------------------------------------------------- #}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>{% block title %}Hotel House Hunter{% endblock %}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- CSS principal -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body class="{% block body_class %}{% endblock %}">
+
+  <!-- NAVBAR -->
+  <header class="navbar">
+    <div class="navbar__logo">
+      <!-- Podés reemplazar por un <img> con tu logo -->
+      <span class="navbar__brand">Hotel House Hunter</span>
+    </div>
+
+    <nav class="navbar__nav">
+      {# Si el usuario está logueado (en session) mostramos opciones de app #}
+      {% if usuario %}
+        <a href="#" class="navbar__link">Mis reservas</a>
+        <a href="#" class="navbar__link">Contáctenos</a>
+
+        <!-- Barra de búsqueda de reservas -->
+        <form class="navbar__search" action="#" method="get">
+          <input
+            type="text"
+            name="q"
+            placeholder="Buscar mis reservas..."
+            class="navbar__search-input"
+          />
+        </form>
+
+        <!-- Nombre del usuario + Logout -->
+        <div class="navbar__user">
+          <span class="navbar__user-name">
+            {{ usuario.nombre }} {{ usuario.apellido }}
+          </span>
+          <a href="#" class="btn btn--outline">Logout</a>
+        </div>
+      {% else %}
+        {# Si NO hay usuario logueado, mostramos Login / Signup como en Figma #}
+        <a href="{{ url_for('main.landing_login') }}" class="btn btn--ghost">
+          Login
+        </a>
+        <a href="#" class="btn btn--primary">
+          Sign up
+        </a>
+      {% endif %}
+    </nav>
+  </header>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <main class="page-content">
+    {% block content %}{% endblock %}
+  </main>
+
+</body>
+</html>

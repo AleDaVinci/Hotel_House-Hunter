@@ -2,49 +2,27 @@
 # Archivo: app.py
 # Responsabilidad:
 #   - Punto de entrada principal de la aplicación web.
-#   - Configurar y arrancar la app Flask.
-#   - Definir las primeras rutas (endpoints) de prueba.
+#   - Crear la instancia de Flask.
+#   - Registrar los blueprints de rutas.
 #
 # Alcance:
-#   - En esta primera versión solo tiene una ruta '/' que:
-#       * Verifica que Flask funciona.
-#       * Prueba la conexión a la base de datos MySQL.
-#   - Más adelante aquí vamos a:
-#       * Registrar las rutas de login/signup.
-#       * Registrar las rutas de búsqueda y reservas.
-#       * Renderizar los templates HTML (landing, mis reservas, etc.).
+#   - En esta versión inicial:
+#       * Registra las rutas principales (landing/login).
+#       * Configura una clave secreta para manejar sesiones.
 # -----------------------------------------------------------------------------
 
 from flask import Flask
-from database.connection import get_connection
+from app.routes.main_routes import main_bp  # importamos el blueprint "main"
 
+# Crear instancia de la aplicación Flask
 app = Flask(__name__)
 
+# Clave secreta necesaria para usar 'session' (login, flash, etc.)
+# En producción esto debe ser un valor complejo y secreto.
+app.secret_key = "clave-super-secreta-cambiar-en-produccion"
 
-@app.route("/")
-def home():
-    """
-    Ruta de prueba para verificar que:
-      - Flask está corriendo correctamente.
-      - La conexión a la base de datos funciona.
-    """
-    try:
-        conn = get_connection()
-        cursor = conn.cursor()
-
-        # Consulta simple: listar tablas de la base
-        cursor.execute("SHOW TABLES;")
-        tables = cursor.fetchall()
-
-        cursor.close()
-        conn.close()
-
-        # Mostrar resultado simple en el navegador
-        return f"Flask OK. Conectado a la BD. Tablas: {tables}"
-
-    except Exception as e:
-        # Si algo sale mal, mostramos el error en el navegador
-        return f"Error al conectar con la BD: {e}"
+# Registrar el blueprint con las rutas principales
+app.register_blueprint(main_bp)
 
 
 if __name__ == "__main__":
