@@ -15,25 +15,25 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- ============================================================
 
 -- Roles
-SOURCE ./inserts/rol_inserts.sql;
+ SOURCE ./database/inserts/rol_inserts.sql;
 
 -- Usuarios iniciales
-SOURCE ./inserts/usuario_inserts.sql;
+ SOURCE ./database/inserts/usuario_inserts.sql;
 
 -- Tarifas
-SOURCE ./inserts/tarifa_inserts.sql;
+SOURCE ./database/inserts/tarifa_inserts.sql;
 
 -- Promociones
-SOURCE ./inserts/promocion_inserts.sql;
+SOURCE ./database/inserts/promocion_inserts.sql;
 
 -- Amenities
-SOURCE ./inserts/amenidad_inserts.sql;
+SOURCE ./database/inserts/amenidad_inserts.sql;
 
 -- Habitaciones
-SOURCE ./inserts/habitacion_inserts.sql;
+SOURCE ./database/inserts/habitacion_inserts.sql;
 
 -- Relación habitaciones ↔ amenities
-SOURCE ./inserts/habitacion_amenidad_inserts.sql;
+SOURCE ./database/inserts/habitacion_amenidad_inserts.sql;
 
 -- ============================================================
 -- Restaurar FOREIGN_KEY_CHECKS
