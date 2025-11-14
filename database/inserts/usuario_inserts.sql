@@ -14,7 +14,8 @@ VALUES
     'Admin',
     'Sistema',
     'admin@admin.com',
-    'admin',          
+    SHA2('admin', 256), 
     '+54 11 1234 5678',
     1
   );
+

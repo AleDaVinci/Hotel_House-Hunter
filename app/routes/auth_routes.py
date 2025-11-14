@@ -44,7 +44,7 @@ def login():
         flash("Usuario no encontrado.", "error")
         return redirect(url_for("auth.login"))
 
-    if user["password"] != hash_password(password):
+    if user["password_hash"] != hash_password(password):
         flash("Contraseña incorrecta.", "error")
         return redirect(url_for("auth.login"))
 

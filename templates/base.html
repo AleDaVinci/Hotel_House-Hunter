@@ -22,42 +22,39 @@
   <!-- NAVBAR -->
   <header class="navbar">
     <div class="navbar__logo">
-      <!-- Podés reemplazar por un <img> con tu logo -->
       <span class="navbar__brand">Hotel House Hunter</span>
     </div>
 
     <nav class="navbar__nav">
       {# Si el usuario está logueado (en session) mostramos opciones de app #}
       {% if usuario %}
-        <a href="#" class="navbar__link">Mis reservas</a>
-        <a href="#" class="navbar__link">Contáctenos</a>
+          <a href="#" class="navbar__link">Mis reservas</a>
+          <a href="#" class="navbar__link">Contáctenos</a>
 
-        <!-- Barra de búsqueda de reservas -->
-        <form class="navbar__search" action="#" method="get">
-          <input
-            type="text"
-            name="q"
-            placeholder="Buscar mis reservas..."
-            class="navbar__search-input"
-          />
-        </form>
+          <form class="navbar__search" action="#" method="get">
+            <input
+              type="text"
+              name="q"
+              placeholder="Buscar mis reservas..."
+              class="navbar__search-input"
+            />
+          </form>
 
-        <!-- Nombre del usuario + Logout -->
-        <div class="navbar__user">
-          <span class="navbar__user-name">
-            {{ usuario.nombre }} {{ usuario.apellido }}
-          </span>
-          <a href="#" class="btn btn--outline">Logout</a>
-        </div>
-      {% else %}
-        {# Si NO hay usuario logueado, mostramos Login / Signup como en Figma #}
-        <a href="{{ url_for('main.landing_login') }}" class="btn btn--ghost">
-          Login
-        </a>
-        <a href="#" class="btn btn--primary">
-          Sign up
-        </a>
+          <div class="navbar__user">
+            <span class="navbar__user-name">
+              {{ usuario.nombre }} {{ usuario.apellido }}
+            </span>
+            <a href="{{ url_for('auth.logout') }}" class="btn btn--outline">Logout</a>
+          </div>
+        {% else %}
+          <a href="{{ url_for('auth.login') }}" class="btn btn--ghost">
+            Login
+          </a>
+          <a href="{{ url_for('auth.signup') }}" class="btn btn--primary">
+            Sign up
+          </a>
       {% endif %}
+
     </nav>
   </header>
 

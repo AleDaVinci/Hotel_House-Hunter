@@ -25,7 +25,7 @@
     <h1 class="login-card__title">Bienvenido</h1>
     <p class="login-card__subtitle">Inicia sesión para gestionar tus reservas</p>
 
-    <form class="login-form" method="post" action="#">
+    <form class="login-form" method="post" action="{{ url_for('auth.login') }}">
       <div class="form-group">
         <label for="email">Correo electrónico</label>
         <input
