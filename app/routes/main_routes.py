@@ -27,3 +27,12 @@ def landing_login():
     usuario = session.get("usuario")  # dict con nombre/apellido, si existiera
 
     return render_template("login.html", usuario=usuario)
+
+@main_bp.route("/dashboard")
+def dashboard():
+    usuario = session.get("usuario")
+    if not usuario:
+        return redirect(url_for("auth.login"))
+
+    return render_template("dashboard.html", usuario=usuario)
+
