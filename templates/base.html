@@ -26,36 +26,35 @@
     </div>
 
     <nav class="navbar__nav">
-      {# Si el usuario está logueado (en session) mostramos opciones de app #}
-      {% if usuario %}
-          <a href="#" class="navbar__link">Mis reservas</a>
-          <a href="#" class="navbar__link">Contáctenos</a>
+  {% if usuario %}
+    <a href="{{ url_for('main.dashboard') }}" class="navbar__link">Mis reservas</a>
+    <a href="#" class="navbar__link">Contáctenos</a>
 
-          <form class="navbar__search" action="#" method="get">
-            <input
-              type="text"
-              name="q"
-              placeholder="Buscar mis reservas..."
-              class="navbar__search-input"
-            />
-          </form>
+    <form class="navbar__search" action="#" method="get">
+      <input
+        type="text"
+        name="q"
+        placeholder="Buscar mis reservas..."
+        class="navbar__search-input"
+      />
+    </form>
 
-          <div class="navbar__user">
-            <span class="navbar__user-name">
-              {{ usuario.nombre }} {{ usuario.apellido }}
-            </span>
-            <a href="{{ url_for('auth.logout') }}" class="btn btn--outline">Logout</a>
-          </div>
-        {% else %}
-          <a href="{{ url_for('auth.login') }}" class="btn btn--ghost">
-            Login
-          </a>
-          <a href="{{ url_for('auth.signup') }}" class="btn btn--primary">
-            Sign up
-          </a>
-      {% endif %}
+    <div class="navbar__user">
+      <span class="navbar__user-name">
+        {{ usuario.nombre }} {{ usuario.apellido }}
+      </span>
+      <a href="{{ url_for('auth.logout') }}" class="btn btn--outline">Logout</a>
+    </div>
+  {% else %}
+    <a href="{{ url_for('auth.login') }}" class="btn btn--ghost">
+      Login
+    </a>
+    <a href="#" class="btn btn--primary">
+      Sign up
+    </a>
+  {% endif %}
+</nav>
 
-    </nav>
   </header>
 
   <!-- CONTENIDO PRINCIPAL -->

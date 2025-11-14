@@ -1,12 +1,175 @@
 {% extends "base.html" %}
 
-{% block title %}Panel de usuario{% endblock %}
+{% block title %}Dashboard - Hotel House Hunter{% endblock %}
+
+{% block body_class %}page--dashboard{% endblock %}
 
 {% block content %}
-<div class="dashboard-container">
-  <h1>Hola, {{ usuario.nombre }} {{ usuario.apellido }}</h1>
-  <p>Bienvenido al panel de reservas.</p>
 
-  <a href="#" class="btn btn--primary">Mis reservas</a>
-</div>
+<!-- ================= HERO ================= -->
+<section class="dashboard-hero">
+  <div class="dashboard-hero__overlay"></div>
+  <img src="{{ url_for('static', filename='img/hotel-bg.jpg') }}" class="dashboard-hero__img">
+  <h1 class="dashboard-hero__title">Bienvenido, {{ usuario.nombre }}</h1>
+</section>
+
+
+<!-- ================= RESERVAR ONLINE ================= -->
+<section class="reserva-box">
+  <h2 class="reserva-box__title">Reservar Online</h2>
+
+  <form class="reserva-form">
+    <div class="form-group">
+      <label>Fecha de entrada</label>
+      <input type="date" required>
+    </div>
+
+    <div class="form-group">
+      <label>Fecha de salida</label>
+      <input type="date" required>
+    </div>
+
+    <div class="form-group">
+      <label>Pasajeros</label>
+      <input type="number" min="1" max="6" value="1" required>
+    </div>
+
+    <button type="submit" class="btn btn--primary btn--full">Buscar</button>
+  </form>
+</section>
+
+
+<!-- ================= TABS ================= -->
+<section class="dashboard-tabs">
+  <button class="tab-btn active" data-target="tab-descripcion">Descripción</button>
+  <button class="tab-btn" data-target="tab-habitaciones">Habitaciones</button>
+  <button class="tab-btn" data-target="tab-fotos">Fotos</button>
+  <button class="tab-btn" data-target="tab-resenas">Reseñas</button>
+</section>
+
+
+<!-- ================= CONTENIDO DINÁMICO ================= -->
+<section class="dashboard-content">
+
+  <!-- === DESCRIPCION === -->
+  <div class="descripcion-box">
+        <h2>Experiencia de Confort</h2>
+        <p>
+            Nuestro hotel ofrece una experiencia única, rodeado de naturaleza y con todas las comodidades modernas. 
+            Disfrute de amplias habitaciones, vistas increíbles, gastronomía destacada y espacios ideales para relajarse.
+        </p>
+
+        <p>
+            Ubicado en un entorno privilegiado, ofrecemos el equilibrio perfecto entre descanso, confort y actividades para toda la familia.
+        </p>
+
+        <p>
+            Nuestro personal está disponible las 24 horas para brindarte una estadía memorable.
+        </p>
+    </div>
+
+
+  <!-- === HABITACIONES === -->
+    <div id="tab-habitaciones" class="tab-content">
+        <div class="habitacion-card">
+            <img
+            src="{{ url_for('static', filename='img/f1.jpg') }}"
+            alt="Habitación Standard"
+            class="habitacion-card__img"
+            >
+            <div class="habitacion-card__body">
+            <h3>Habitación Standard</h3>
+            <p>Ideal para 2 personas. Vista interna. Baño privado. Aire acondicionado.</p>
+            <p><strong>Capacidad:</strong> 1–2 huéspedes</p>
+            <p><strong>Tipo de cama:</strong> Queen</p>
+            </div>
+        </div>
+
+        <div class="habitacion-card">
+            <img
+            src="{{ url_for('static', filename='img/f2.jpg') }}"
+            alt="Habitación Deluxe"
+            class="habitacion-card__img"
+            >
+            <div class="habitacion-card__body">
+            <h3>Habitación Deluxe</h3>
+            <p>Espaciosa, vista al jardín, TV Smart, minibar, amenities premium.</p>
+            <p><strong>Capacidad:</strong> 2–3 huéspedes</p>
+            <p><strong>Tipo de cama:</strong> King</p>
+            </div>
+        </div>
+
+        <div class="habitacion-card">
+            <img
+            src="{{ url_for('static', filename='img/f3.jpg') }}"
+            alt="Suite Familiar"
+            class="habitacion-card__img"
+            >
+            <div class="habitacion-card__body">
+            <h3>Suite Familiar</h3>
+            <p>Para 4 a 6 personas, dos ambientes, balcones y vista panorámica.</p>
+            <p><strong>Capacidad:</strong> 4–6 huéspedes</p>
+            <p><strong>Tipo de cama:</strong> 1 King + 2 Singles</p>
+            </div>
+        </div>
+    </div>
+
+
+
+  <!-- === FOTOS === -->
+    <div id="tab-fotos" class="tab-content">
+        <div class="fotos-grid">
+            <img src="{{ url_for('static', filename='img/f1.jpg') }}">
+            <img src="{{ url_for('static', filename='img/f2.jpg') }}">
+            <img src="{{ url_for('static', filename='img/f3.jpg') }}">
+            <img src="{{ url_for('static', filename='img/f4.jpg') }}">
+        </div>
+    </div>
+
+  <!-- === RESEÑAS === -->
+  <div id="tab-resenas" class="tab-content">
+        <div class="resena-card">
+            <strong>Juan P.</strong>
+            <p>Excelente experiencia. La habitación súper cómoda y el personal muy atento.</p>
+        </div>
+
+        <div class="resena-card">
+            <strong>María L.</strong>
+            <p>La vista desde la suite fue increíble. Volvería sin dudarlo.</p>
+        </div>
+
+        <div class="resena-card">
+            <strong>Carlos G.</strong>
+            <p>Todo impecable. El desayuno muy completo y variado.</p>
+        </div>
+    </div>
+
+</section>
+
+
+<!-- ================= SCRIPT: TABS ================= -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const buttons = document.querySelectorAll(".tab-btn");
+  const tabs = document.querySelectorAll(".tab-content");
+
+  buttons.forEach(btn => {
+    btn.addEventListener("click", () => {
+
+      // desactivar todos los botones
+      buttons.forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+
+      const target = btn.dataset.target;
+
+      // ocultar todas las secciones
+      tabs.forEach(tab => tab.classList.remove("active"));
+
+      // mostrar solo la elegida
+      document.getElementById(target).classList.add("active");
+    });
+  });
+});
+</script>
+
 {% endblock %}
