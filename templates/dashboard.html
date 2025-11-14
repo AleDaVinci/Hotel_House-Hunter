@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block title %}Panel de usuario{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+  <h1>Hola, {{ usuario.nombre }} {{ usuario.apellido }}</h1>
+  <p>Bienvenido al panel de reservas.</p>
+
+  <a href="#" class="btn btn--primary">Mis reservas</a>
+</div>
+{% endblock %}
