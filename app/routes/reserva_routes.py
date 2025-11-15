@@ -5,11 +5,17 @@
 #   - Aplicar reglas de negocio de disponibilidad:
 #       * Solo se considera disponibilidad desde hoy hasta 31/12/2026
 #       * Una habitación está disponible si NO tiene reservas solapadas
+#   - Delegar el cálculo de precios / tarifas / promociones al servicio
+#     app/services/precios_service.py
 # ---------------------------------------------------------------------
 
 from flask import Blueprint, request, jsonify
 from datetime import datetime, date
 from database.connection import get_connection
+from app.services.precios_service import (
+    calcular_opciones_tarifa,
+    adjuntar_precios_a_habitaciones,
+)
 
 reserva_bp = Blueprint("reserva", __name__)
 
@@ -17,7 +23,8 @@ reserva_bp = Blueprint("reserva", __name__)
 @reserva_bp.route("/buscar_habitaciones", methods=["POST"])
 def buscar_habitaciones():
     """Recibe fecha_inicio, fecha_fin y pasajeros, valida el rango
-    y devuelve la lista de habitaciones disponibles en formato JSON.
+    y devuelve la lista de habitaciones disponibles en formato JSON,
+    incluyendo amenidades y opciones de precio (tarifas + promociones).
     """
 
     data = request.get_json()
@@ -113,8 +120,8 @@ def buscar_habitaciones():
             message="Error al consultar la disponibilidad."
         ), 500
 
-    # ===== 5) Asignación de imágenes demo =====
-    # Si imagen_principal está cargada, la usamos.
+    # ===== 5) Asignación de imágenes =====
+    # Si imagen_principal está cargada, la usamos tal cual.
     # Si no, asignamos f1/f2/f3 como demo.
     for index, hab in enumerate(habitaciones, start=1):
         if hab.get("imagen_principal"):
@@ -151,7 +158,21 @@ def buscar_habitaciones():
     cursor.close()
     conn.close()
 
+    # ===== 7) Calcular precios (tarifas + promociones) =====
+    #   Delegamos el cálculo al servicio de precios.
+    opciones_tarifa, noches = calcular_opciones_tarifa(fecha_inicio, fecha_fin)
+
+    # Agregamos a cada habitación la clave "tarifas" con las
+    # opciones calculadas (incluye precio_noche_final, total_final, etc.).
+    habitaciones = adjuntar_precios_a_habitaciones(
+        habitaciones,
+        opciones_tarifa,
+        noches
+    )
+
+    # ===== 8) Respuesta JSON al frontend =====
     return jsonify({
         "ok": True,
+        "noches": noches,
         "habitaciones": habitaciones
     })

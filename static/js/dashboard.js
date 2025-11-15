@@ -5,7 +5,7 @@
 // - Controlar y validar fechas del formulario de búsqueda
 // - Validar formulario de búsqueda (campos obligatorios)
 // - Enviar búsqueda al backend vía fetch (AJAX)
-// - Renderizar habitaciones en la pestaña "Habitaciones"
+// - Delegar render de habitaciones (con precios) a precios.js
 // -----------------------------------------------
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -26,26 +26,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // ====== CONTROL DE FECHAS (MIN = HOY, SALIDA >= ENTRADA) ======
 
-  // Obtenemos la fecha de hoy en formato YYYY-MM-DD
   const hoy = new Date();
-  hoy.setHours(0, 0, 0, 0); // normalizamos hora
+  hoy.setHours(0, 0, 0, 0);
   const hoyStr = hoy.toISOString().split("T")[0];
 
-  // No permitir fechas anteriores a hoy
   fechaInicio.min = hoyStr;
   fechaFin.min = hoyStr;
 
-  // Cuando cambia la fecha de entrada:
   fechaInicio.addEventListener("change", () => {
     if (!fechaInicio.value) return;
 
-    // Si el usuario elige una fecha de entrada menor a hoy, corregimos
     if (fechaInicio.value < hoyStr) {
       alert("La fecha de entrada no puede ser anterior a hoy.");
       fechaInicio.value = hoyStr;
     }
 
-    // La fecha de salida no puede ser menor a la de entrada
     fechaFin.min = fechaInicio.value;
 
     if (fechaFin.value && fechaFin.value < fechaInicio.value) {
@@ -53,18 +48,15 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Cuando cambia la fecha de salida:
   fechaFin.addEventListener("change", () => {
     if (!fechaFin.value) return;
 
-    // No permitir fechas de salida en el pasado
     if (fechaFin.value < hoyStr) {
       alert("La fecha de salida no puede ser anterior a hoy.");
       fechaFin.value = hoyStr;
       return;
     }
 
-    // Si hay fecha de entrada, validamos el orden
     if (fechaInicio.value && fechaFin.value < fechaInicio.value) {
       alert("La fecha de salida no puede ser anterior a la fecha de entrada.");
       fechaFin.value = fechaInicio.value;
@@ -74,19 +66,15 @@ document.addEventListener("DOMContentLoaded", () => {
   // ====== FUNCIONES AUXILIARES ======
 
   function activarTab(target) {
-    // Quitar activo de todos los botones
     buttons.forEach((b) => b.classList.remove("active"));
 
-    // Activar el botón cuyo data-target coincide
     const botonTarget = document.querySelector(`[data-target="${target}"]`);
     if (botonTarget) {
       botonTarget.classList.add("active");
     }
 
-    // Ocultar todas las tabs
     tabs.forEach((tab) => tab.classList.remove("active"));
 
-    // Mostrar la tab objetivo
     const tabTarget = document.getElementById(target);
     if (tabTarget) {
       tabTarget.classList.add("active");
@@ -96,12 +84,10 @@ document.addEventListener("DOMContentLoaded", () => {
   function validarCamposBusqueda() {
     let valido = true;
 
-    // Limpiar errores visuales
     [fechaInicio, fechaFin, pasajeros].forEach((campo) => {
       campo.classList.remove("campo-error");
     });
 
-    // 1) Validar que no estén vacíos
     [fechaInicio, fechaFin, pasajeros].forEach((campo) => {
       if (!campo.value || campo.value.trim() === "") {
         campo.classList.add("campo-error");
@@ -114,7 +100,6 @@ document.addEventListener("DOMContentLoaded", () => {
       return false;
     }
 
-    // 2) Validar que las fechas no sean anteriores a hoy
     if (fechaInicio.value < hoyStr) {
       fechaInicio.classList.add("campo-error");
       alert("La fecha de entrada no puede ser anterior a hoy.");
@@ -127,7 +112,6 @@ document.addEventListener("DOMContentLoaded", () => {
       valido = false;
     }
 
-    // 3) Validar que fecha_fin >= fecha_inicio
     if (
       fechaInicio.value &&
       fechaFin.value &&
@@ -146,23 +130,17 @@ document.addEventListener("DOMContentLoaded", () => {
     btn.addEventListener("click", () => {
       const target = btn.dataset.target;
 
-      // Si el usuario clickea la pestaña Habitaciones,
-      // primero exigimos que haya hecho una búsqueda válida.
       if (target === "tab-habitaciones") {
         const valido = validarCamposBusqueda();
         if (!valido) {
-          // opcional: scrollear hacia el formulario
           form.scrollIntoView({ behavior: "smooth", block: "center" });
-          return; // no cambiamos de pestaña
+          return;
         }
 
-        // Si los campos están completos y válidos, disparamos la búsqueda
-        // como si hubiera apretado el botón "Buscar".
         form.requestSubmit();
-        return; // el cambio de pestaña lo hace el submit
+        return;
       }
 
-      // Para las demás pestañas, comportamiento normal
       activarTab(target);
     });
   });
@@ -171,7 +149,6 @@ document.addEventListener("DOMContentLoaded", () => {
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    // Validación previa
     const valido = validarCamposBusqueda();
     if (!valido) return;
 
@@ -190,57 +167,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const data = await respuesta.json();
 
-      contHabitaciones.innerHTML = "";
-
-      if (data.ok) {
-        if (!data.habitaciones || data.habitaciones.length === 0) {
-          contHabitaciones.innerHTML =
-            "<p>No hay disponibilidad para los criterios seleccionados.</p>";
-        } else {
-          data.habitaciones.forEach((h) => {
-            // Construimos el HTML de las amenidades de forma segura
-            const amenidadesHtml =
-              h.amenidades && h.amenidades.length > 0
-                ? h.amenidades
-                    .map(
-                      (am) => `
-                  <img src="${am.icono}"
-                       alt="${am.nombre}"
-                       title="${am.nombre}"
-                       class="amenidad-icon">
-                `
-                    )
-                    .join("")
-                : "";
-
-            contHabitaciones.innerHTML += `
-        <div class="habitacion-card">
-          <img src="/static/img/${h.imagen}" class="habitacion-card__img" alt="Habitación ${h.nombre}">
-          <div class="habitacion-card__body">
-            <h3>${h.nombre}</h3>
-            <p>${h.descripcion}</p>
-            <p><strong>Capacidad:</strong> ${h.capacidad}</p>
-            <div class="habitacion-amenidades">
-              ${amenidadesHtml}
-            </div>
-          </div>
-        </div>
-      `;
-          });
-        }
+      // Delegamos el render a precios.js
+      if (window.renderHabitacionesConPrecios) {
+        renderHabitacionesConPrecios(data, contHabitaciones);
       } else {
-        if (data.message) {
-          contHabitaciones.innerHTML = `<p>${data.message}</p>`;
-        } else {
-          contHabitaciones.innerHTML =
-            "<p>Ocurrió un error al buscar habitaciones. Intenta nuevamente.</p>";
-        }
+        console.error(
+          "⚠️ No se encontró la función renderHabitacionesConPrecios (precios.js no cargado)."
+        );
+        contHabitaciones.innerHTML =
+          "<p>Ocurrió un error al mostrar las habitaciones.</p>";
       }
     } catch (error) {
       console.error("Error en la búsqueda de habitaciones:", error);
       contHabitaciones.innerHTML =
         "<p>Ocurrió un error al buscar habitaciones. Intenta nuevamente.</p>";
     }
+
     activarTab("tab-habitaciones");
   });
 });

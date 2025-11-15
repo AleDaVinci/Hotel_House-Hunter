@@ -22,12 +22,12 @@ VALUES
     1
   ),
   (
-    (SELECT `id_tarifa` FROM `tarifa` WHERE `nombre` = 'Base Reembolsable'),
+    (SELECT `id_tarifa` FROM `tarifa` WHERE `nombre` = 'No Reembolsable Web'),
     'Promo Invierno',
     'Descuento especial para estadías en temporada de invierno.',
-    10.00,
-    2,
-    '2025-06-01',
-    '2025-08-31',
+    20.00,
+    1,
+    '2026-06-01',
+    '2026-08-31',
     1
   );
