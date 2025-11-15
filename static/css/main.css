@@ -328,7 +328,7 @@ body {
   width: 100%;
   max-width: 900px;
   margin: -60px auto 30px auto;
-  background: rgb(41 55 127 / 90%);
+  background: rgb(41 55 127 / 30%);
   padding: 2rem;
   border-radius: 1rem;
   backdrop-filter: blur(12px);
@@ -487,6 +487,20 @@ body {
   margin-top: 0;
 }
 
+.habitacion-amenidades {
+  margin-top: .6rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  opacity: 0.9;
+}
+
+.amenidad-icon {
+  width: 22px;
+  height: 22px;
+  filter: invert(1) brightness(2);
+  text-shadow: 0 0 4px rgba(255,255,255,0.3);
+}
 
 /* ----------- GALERÍA FOTOS ----------- */
 .fotos-grid {

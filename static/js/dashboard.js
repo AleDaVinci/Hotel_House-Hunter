@@ -78,9 +78,7 @@ document.addEventListener("DOMContentLoaded", () => {
     buttons.forEach((b) => b.classList.remove("active"));
 
     // Activar el botón cuyo data-target coincide
-    const botonTarget = document.querySelector(
-      `[data-target="${target}"]`
-    );
+    const botonTarget = document.querySelector(`[data-target="${target}"]`);
     if (botonTarget) {
       botonTarget.classList.add("active");
     }
@@ -130,7 +128,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // 3) Validar que fecha_fin >= fecha_inicio
-    if (fechaInicio.value && fechaFin.value && fechaFin.value < fechaInicio.value) {
+    if (
+      fechaInicio.value &&
+      fechaFin.value &&
+      fechaFin.value < fechaInicio.value
+    ) {
       fechaFin.classList.add("campo-error");
       alert("La fecha de salida no puede ser anterior a la fecha de entrada.");
       valido = false;
@@ -165,7 +167,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-    // ====== SUBMIT DEL FORMULARIO DE BÚSQUEDA ======
+  // ====== SUBMIT DEL FORMULARIO DE BÚSQUEDA ======
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
@@ -190,22 +192,40 @@ document.addEventListener("DOMContentLoaded", () => {
 
       contHabitaciones.innerHTML = "";
 
-            if (data.ok) {
+      if (data.ok) {
         if (!data.habitaciones || data.habitaciones.length === 0) {
           contHabitaciones.innerHTML =
             "<p>No hay disponibilidad para los criterios seleccionados.</p>";
         } else {
           data.habitaciones.forEach((h) => {
+            // Construimos el HTML de las amenidades de forma segura
+            const amenidadesHtml =
+              h.amenidades && h.amenidades.length > 0
+                ? h.amenidades
+                    .map(
+                      (am) => `
+                  <img src="${am.icono}"
+                       alt="${am.nombre}"
+                       title="${am.nombre}"
+                       class="amenidad-icon">
+                `
+                    )
+                    .join("")
+                : "";
+
             contHabitaciones.innerHTML += `
-              <div class="habitacion-card">
-                <img src="/static/img/${h.imagen}" class="habitacion-card__img" alt="Habitación ${h.nombre}">
-                <div class="habitacion-card__body">
-                  <h3>${h.nombre}</h3>
-                  <p>${h.descripcion}</p>
-                  <p><strong>Capacidad:</strong> ${h.capacidad}</p>
-                </div>
-              </div>
-            `;
+        <div class="habitacion-card">
+          <img src="/static/img/${h.imagen}" class="habitacion-card__img" alt="Habitación ${h.nombre}">
+          <div class="habitacion-card__body">
+            <h3>${h.nombre}</h3>
+            <p>${h.descripcion}</p>
+            <p><strong>Capacidad:</strong> ${h.capacidad}</p>
+            <div class="habitacion-amenidades">
+              ${amenidadesHtml}
+            </div>
+          </div>
+        </div>
+      `;
           });
         }
       } else {
@@ -223,5 +243,4 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     activarTab("tab-habitaciones");
   });
-
 });

@@ -128,8 +128,25 @@ def buscar_habitaciones():
             else:
                 hab["imagen"] = "f3.jpg"
 
-        
+        # ya no necesitamos enviar imagen_principal al front
         hab.pop("imagen_principal", None)
+
+    # ===== 6) Traer amenidades por habitación =====
+    #   Para cada habitación disponible, buscamos sus amenities activos
+    #   y los agregamos como lista en hab["amenidades"].
+    for hab in habitaciones:
+        cursor.execute(
+            """
+            SELECT a.nombre, a.icono
+            FROM habitacion_amenidad ha
+            JOIN amenidad a ON a.id_amenidad = ha.id_amenidad
+            WHERE ha.id_habitacion = %s
+              AND a.es_activa = 1
+            """,
+            (hab["id_habitacion"],),
+        )
+        amenidades = cursor.fetchall()  # lista de dicts con {nombre, icono}
+        hab["amenidades"] = amenidades
 
     cursor.close()
     conn.close()

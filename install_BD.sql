@@ -16,7 +16,7 @@
 --   1) Ejecuta schema.sql  -> crea la BD hotel_hunter y todas las tablas.
 --   2) Ejecuta seed.sql    -> inserta datos iniciales usando ./inserts/*.sql
 -- ============================================================
-
+SET NAMES utf8mb4;
 -- 1) Crear/Recrear la base de datos y todas las tablas
 SOURCE ./database/schema.sql;
 
