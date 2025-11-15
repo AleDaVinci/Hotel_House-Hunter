@@ -2,9 +2,13 @@
 # Archivo: app/routes/reserva_routes.py
 # Responsabilidad:
 #   - Manejar búsquedas de habitaciones disponibles
+#   - Aplicar reglas de negocio de disponibilidad:
+#       * Solo se considera disponibilidad desde hoy hasta 31/12/2026
+#       * Una habitación está disponible si NO tiene reservas solapadas
 # ---------------------------------------------------------------------
 
 from flask import Blueprint, request, jsonify
+from datetime import datetime, date
 from database.connection import get_connection
 
 reserva_bp = Blueprint("reserva", __name__)
@@ -12,55 +16,125 @@ reserva_bp = Blueprint("reserva", __name__)
 
 @reserva_bp.route("/buscar_habitaciones", methods=["POST"])
 def buscar_habitaciones():
+    """Recibe fecha_inicio, fecha_fin y pasajeros, valida el rango
+    y devuelve la lista de habitaciones disponibles en formato JSON.
+    """
+
     data = request.get_json()
 
-    fecha_inicio = data.get("fecha_inicio")
-    fecha_fin = data.get("fecha_fin")
-    pasajeros = data.get("pasajeros")
+    fecha_inicio_str = data.get("fecha_inicio")
+    fecha_fin_str = data.get("fecha_fin")
+    pasajeros_str = data.get("pasajeros")
 
+    # ===== 1) Validación básica de presencia =====
+    if not fecha_inicio_str or not fecha_fin_str or not pasajeros_str:
+        return jsonify(
+            ok=False,
+            message="Faltan parámetros para la búsqueda."
+        ), 400
+
+    # ===== 2) Parseo y validación de tipos =====
+    try:
+        fecha_inicio = datetime.strptime(fecha_inicio_str, "%Y-%m-%d").date()
+        fecha_fin = datetime.strptime(fecha_fin_str, "%Y-%m-%d").date()
+        pasajeros = int(pasajeros_str)
+    except ValueError:
+        return jsonify(
+            ok=False,
+            message="Formato de datos inválido."
+        ), 400
+
+    hoy = date.today()
+    limite_max = date(2026, 12, 31)
+
+    # ===== 3) Validaciones de reglas de negocio de fechas =====
+    if fecha_inicio < hoy:
+        return jsonify(
+            ok=False,
+            message="La fecha de entrada no puede ser anterior a hoy."
+        ), 400
+
+    if fecha_fin <= fecha_inicio:
+        return jsonify(
+            ok=False,
+            message="La fecha de salida debe ser posterior a la fecha de entrada."
+        ), 400
+
+    if fecha_inicio > limite_max or fecha_fin > limite_max:
+        return jsonify(
+            ok=False,
+            message=(
+                "Las disponibilidades solo están cargadas hasta el 31/12/2026. "
+                "Elegí fechas dentro de ese rango."
+            )
+        ), 400
+
+    # ===== 4) Consulta de habitaciones disponibles en la BD =====
     conn = get_connection()
     cursor = conn.cursor(dictionary=True)
 
-    # 1) Traemos todas las habitaciones que soporten la cantidad de huéspedes
-    cursor.execute("""
-        SELECT id_habitacion, nombre, descripcion, capacidad
-        FROM habitacion
-        WHERE capacidad >= %s
-    """, (pasajeros,))
+    # Regla de solapamiento:
+    #   Hay solapamiento si:
+    #     r.fecha_check_in  < fecha_fin_buscada
+    #     Y
+    #     r.fecha_check_out > fecha_inicio_buscada
+    #
+    # Una habitación está disponible si NO EXISTE reserva que cumpla eso.
+    sql = """
+        SELECT 
+            h.id_habitacion,
+            h.nombre,
+            h.descripcion,
+            h.capacidad_personas AS capacidad,
+            h.imagen_principal
+        FROM habitacion AS h
+        WHERE h.capacidad_personas >= %s
+          AND h.es_activa = 1
+          AND NOT EXISTS (
+              SELECT 1
+              FROM reserva AS r
+              WHERE r.id_habitacion = h.id_habitacion
+                AND r.fecha_check_in  < %s
+                AND r.fecha_check_out > %s
+          )
+    """
 
-    habitaciones = cursor.fetchall()
+    params = (pasajeros, fecha_fin, fecha_inicio)
 
-    disponibles = []
+    try:
+        cursor.execute(sql, params)
+        habitaciones = cursor.fetchall()
+    except Exception as e:
+        print("Error al consultar disponibilidad:", e)
+        cursor.close()
+        conn.close()
+        return jsonify(
+            ok=False,
+            message="Error al consultar la disponibilidad."
+        ), 500
 
-    # 2) Filtramos por solapamiento de fechas
-    for hab in habitaciones:
-        cursor.execute("""
-            SELECT COUNT(*) AS cant FROM reserva
-            WHERE id_habitacion = %s
-            AND (
-                (fecha_inicio <= %s AND fecha_fin >= %s)
-                OR
-                (fecha_inicio <= %s AND fecha_fin >= %s)
-                OR
-                (%s <= fecha_inicio AND %s >= fecha_inicio)
-            )
-        """, (
-            hab["id_habitacion"],
-            fecha_inicio, fecha_inicio,
-            fecha_fin, fecha_fin,
-            fecha_inicio, fecha_fin
-        ))
+    # ===== 5) Asignación de imágenes demo =====
+    # Si imagen_principal está cargada, la usamos.
+    # Si no, asignamos f1/f2/f3 como demo.
+    for index, hab in enumerate(habitaciones, start=1):
+        if hab.get("imagen_principal"):
+            hab["imagen"] = hab["imagen_principal"]
+        else:
+            # simple rotación de imágenes de demo
+            if index % 3 == 1:
+                hab["imagen"] = "f1.jpg"
+            elif index % 3 == 2:
+                hab["imagen"] = "f2.jpg"
+            else:
+                hab["imagen"] = "f3.jpg"
 
-        ocupado = cursor.fetchone()["cant"]
-
-        if ocupado == 0:
-            # para ahora asignamos imágenes f1,f2,f3,f4 fijo:
-            hab["imagen"] = "f1.jpg" if hab["id_habitacion"] == 1 else \
-                            "f2.jpg" if hab["id_habitacion"] == 2 else \
-                            "f3.jpg"
-            disponibles.append(hab)
+        
+        hab.pop("imagen_principal", None)
 
     cursor.close()
     conn.close()
 
-    return jsonify({"ok": True, "habitaciones": disponibles})
+    return jsonify({
+        "ok": True,
+        "habitaciones": habitaciones
+    })

@@ -190,7 +190,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       contHabitaciones.innerHTML = "";
 
-      if (data.ok) {
+            if (data.ok) {
         if (!data.habitaciones || data.habitaciones.length === 0) {
           contHabitaciones.innerHTML =
             "<p>No hay disponibilidad para los criterios seleccionados.</p>";
@@ -209,8 +209,12 @@ document.addEventListener("DOMContentLoaded", () => {
           });
         }
       } else {
-        contHabitaciones.innerHTML =
-          "<p>Ocurrió un error al buscar habitaciones. Intenta nuevamente.</p>";
+        if (data.message) {
+          contHabitaciones.innerHTML = `<p>${data.message}</p>`;
+        } else {
+          contHabitaciones.innerHTML =
+            "<p>Ocurrió un error al buscar habitaciones. Intenta nuevamente.</p>";
+        }
       }
     } catch (error) {
       console.error("Error en la búsqueda de habitaciones:", error);

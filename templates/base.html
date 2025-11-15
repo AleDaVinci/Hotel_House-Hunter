@@ -26,34 +26,41 @@
     </div>
 
     <nav class="navbar__nav">
-  {% if usuario %}
-    <a href="{{ url_for('main.dashboard') }}" class="navbar__link">Mis reservas</a>
-    <a href="#" class="navbar__link">Contáctenos</a>
+        {% if usuario %}
 
-    <form class="navbar__search" action="#" method="get">
-      <input
-        type="text"
-        name="q"
-        placeholder="Buscar mis reservas..."
-        class="navbar__search-input"
-      />
-    </form>
+          <!-- IZQUIERDA: queda vacía para centrar correctamente -->
+          <div class="navbar__left"></div>
 
-    <div class="navbar__user">
-      <span class="navbar__user-name">
-        {{ usuario.nombre }} {{ usuario.apellido }}
-      </span>
-      <a href="{{ url_for('auth.logout') }}" class="btn btn--outline">Logout</a>
-    </div>
-  {% else %}
-    <a href="{{ url_for('auth.login') }}" class="btn btn--ghost">
-      Login
-    </a>
-    <a href="#" class="btn btn--primary">
-      Sign up
-    </a>
-  {% endif %}
-</nav>
+          <!-- CENTRO: barra de búsqueda -->
+          <div class="navbar__center">
+            <form class="navbar__search" action="#" method="get">
+              <input
+                type="text"
+                name="q"
+                placeholder="Buscar mis reservas..."
+                class="navbar__search-input"
+              />
+            </form>
+          </div>
+
+          <!-- DERECHA: links -->
+          <div class="navbar__right">
+            <a href="{{ url_for('main.dashboard') }}" class="navbar__link">Mis reservas</a>
+            <a href="#" class="navbar__link">Contáctenos</a>
+            <a href="{{ url_for('auth.logout') }}" class="btn btn--outline">Logout</a>
+          </div>
+
+          {% else %}
+          <div class="navbar__left"></div>
+
+          <div class="navbar__center"></div>
+
+          <div class="navbar__right">
+            <a href="{{ url_for('auth.login') }}" class="btn btn--ghost">Login</a>
+            <a href="#" class="btn btn--primary">Sign up</a>
+          </div>
+        {% endif %}
+    </nav>
 
   </header>
 
