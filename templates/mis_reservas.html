@@ -1,0 +1,156 @@
+{# -------------------------------------------------------------------------
+  Archivo: templates/mis_reservas.html
+  Responsabilidad:
+    - Página independiente "Mis reservas"
+    - Mostrar todas las reservas del usuario logueado
+    - Permitir cancelar y ver detalles de cada reserva
+  Alcance:
+    - Se accede desde el navbar o tras crear una reserva
+    - Extiende base.html para reutilizar navbar y estilos globales
+--------------------------------------------------------------------------- #}
+
+{% extends "base.html" %}
+
+{% block title %}Mis Reservas - Hotel House Hunter{% endblock %}
+{% block body_class %}page--mis-reservas{% endblock %}
+
+{% block content %}
+
+<section class="misreservas-hero">
+  <div class="misreservas-hero__overlay"></div>
+  <img src="{{ url_for('static', filename='img/hotel-bg.jpg') }}" class="misreservas-hero__img">
+  <h1 class="misreservas-hero__title">Mis reservas</h1>
+  <p class="misreservas-hero__subtitle">
+    Aquí podés ver, revisar y gestionar todas tus reservas.
+  </p>
+</section>
+
+<section class="misreservas-contenedor">
+
+  {% if reservas and reservas|length > 0 %}
+  
+    <div class="misreservas-grid">
+
+      {% for r in reservas %}
+      <article class="reserva-card" data-reserva-id="{{ r.id_reserva }}">
+        
+        <!-- ENCABEZADO -->
+        <header class="reserva-card__header">
+          <div>
+            <h3 class="reserva-card__title">
+              {{ r.habitacion_nombre }}
+            </h3>
+            <p class="reserva-card__codigo">
+              Código: <strong>{{ r.codigo_reserva }}</strong>
+            </p>
+          </div>
+
+          <span class="reserva-card__estado estado--{{ r.estado }}">
+            {{ r.estado | capitalize }}
+          </span>
+        </header>
+
+        <!-- CUERPO / INFO PRINCIPAL -->
+        <div class="reserva-card__body">
+
+          <div class="reserva-card__group">
+            <span class="reserva-card__label">Check-in</span>
+            <strong class="reserva-card__value">
+              {{ r.fecha_check_in.strftime('%d/%m/%Y') }}
+            </strong>
+          </div>
+
+          <div class="reserva-card__group">
+            <span class="reserva-card__label">Check-out</span>
+            <strong class="reserva-card__value">
+              {{ r.fecha_check_out.strftime('%d/%m/%Y') }}
+            </strong>
+          </div>
+
+          <div class="reserva-card__group">
+            <span class="reserva-card__label">Huéspedes</span>
+            <strong class="reserva-card__value">
+              {{ r.cantidad_huespedes }}
+            </strong>
+          </div>
+
+          <div class="reserva-card__group">
+            <span class="reserva-card__label">Tarifa</span>
+            <strong class="reserva-card__value">
+              {{ r.tarifa_nombre }}
+            </strong>
+          </div>
+
+          <div class="reserva-card__group">
+            <span class="reserva-card__label">Total</span>
+            <strong class="reserva-card__value">
+              $ {{ "%.2f"|format(r.monto_total) }}
+            </strong>
+          </div>
+
+        </div>
+
+        <!-- FOOTER -->
+        <footer class="reserva-card__footer">
+          
+          <button
+            type="button"
+            class="btn btn--outline btn-sm js-ver-detalle">
+            Ver detalle
+          </button>
+
+          {% if r.estado != "cancelada" %}
+          <form action="{{ url_for('mis_reservas.cancelar_reserva', id_reserva=r.id_reserva) }}"
+                method="POST"
+                class="inline-form">
+            <button type="submit"
+                    class="btn btn--danger btn-sm"
+                    onclick="return confirm('¿Seguro que deseas cancelar esta reserva?');">
+              Cancelar
+            </button>
+          </form>
+          {% endif %}
+        </footer>
+
+        <!-- DETALLE OCULTO -->
+        <div class="reserva-card__details">
+          <p class="reserva-card__details-title">Detalle de la reserva</p>
+
+          <ul class="reserva-card__details-list">
+            <li><strong>Código:</strong> {{ r.codigo_reserva }}</li>
+            <li><strong>Habitación:</strong> {{ r.habitacion_nombre }}</li>
+            <li><strong>Tarifa:</strong> {{ r.tarifa_nombre }}</li>
+            <li><strong>Check-in:</strong> {{ r.fecha_check_in.strftime('%d/%m/%Y') }}</li>
+            <li><strong>Check-out:</strong> {{ r.fecha_check_out.strftime('%d/%m/%Y') }}</li>
+            <li><strong>Huéspedes:</strong> {{ r.cantidad_huespedes }}</li>
+            <li><strong>Estado actual:</strong> {{ r.estado }}</li>
+            <li><strong>Total abonado:</strong> $ {{ "%.2f"|format(r.monto_total) }}</li>
+            <li><strong>Creada el:</strong> 
+                {{ r.creado_en.strftime('%d/%m/%Y %H:%M') if r.creado_en else '' }}
+            </li>
+          </ul>
+        </div>
+
+      </article>
+      {% endfor %}
+
+    </div>
+
+  {% else %}
+
+    <div class="misreservas-empty">
+      <p>
+        Todavía no registrás reservas.<br>
+        Utilizá el <strong>dashboard</strong> para hacer tu primera reserva.
+      </p>
+    </div>
+
+  {% endif %}
+
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+  <script src="{{ url_for('static', filename='js/mis_reservas.js') }}"></script>
+{% endblock %}
