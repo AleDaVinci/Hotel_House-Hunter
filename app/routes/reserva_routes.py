@@ -7,9 +7,10 @@
 #       * Una habitación está disponible si NO tiene reservas solapadas
 #   - Delegar el cálculo de precios / tarifas / promociones al servicio
 #     app/services/precios_service.py
+#   - Crear reservas reales en la tabla `reserva`.
 # ---------------------------------------------------------------------
 
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, session, url_for
 from datetime import datetime, date
 from database.connection import get_connection
 from app.services.precios_service import (
@@ -176,3 +177,155 @@ def buscar_habitaciones():
         "noches": noches,
         "habitaciones": habitaciones
     })
+
+
+# -----------------------------------------------------------------------------
+# Ruta: POST /reservas/crear
+# Responsabilidad:
+#   - Crear una reserva real en la tabla `reserva`.
+#   - Usar la info enviada desde el frontend (precios.js / dashboard.js).
+#   - Asociar la reserva al usuario logueado (session["usuario"]["id"]).
+#
+# Formato esperado del JSON de entrada:
+# {
+#   "id_habitacion": 1,
+#   "id_tarifa": 2,
+#   "id_promocion": null,        # opcional
+#   "fecha_check_in": "2025-11-20",
+#   "fecha_check_out": "2025-11-22",
+#   "cantidad_huespedes": 2,
+#   "noches": 2,
+#   "monto_total": 123456.78
+# }
+# -----------------------------------------------------------------------------
+@reserva_bp.route("/reservas/crear", methods=["POST"])
+def crear_reserva():
+    # 1) Verificar que el usuario esté logueado
+    usuario = session.get("usuario")
+    if not usuario:
+        return jsonify(
+            ok=False,
+            message="Debes iniciar sesión para crear una reserva.",
+            redirect=url_for("auth.login"),
+        ), 401
+
+    id_usuario = usuario["id"]
+
+    # 2) Leer JSON enviado desde el frontend
+    data = request.get_json() or {}
+
+    id_habitacion = data.get("id_habitacion")
+    id_tarifa = data.get("id_tarifa")
+    id_promocion = data.get("id_promocion")  # puede ser None
+    fecha_check_in_str = data.get("fecha_check_in")
+    fecha_check_out_str = data.get("fecha_check_out")
+    cantidad_huespedes = data.get("cantidad_huespedes")
+    noches = data.get("noches")
+    monto_total = data.get("monto_total")
+
+    # 3) Validaciones básicas de presencia
+    if not all([
+        id_habitacion,
+        id_tarifa,
+        fecha_check_in_str,
+        fecha_check_out_str,
+        cantidad_huespedes,
+        noches,
+        monto_total,
+    ]):
+        return jsonify(
+            ok=False,
+            message="Faltan datos para crear la reserva.",
+        ), 400
+
+    # 4) Parseo de tipos (int, float, date)
+    try:
+        id_habitacion = int(id_habitacion)
+        id_tarifa = int(id_tarifa)
+        cantidad_huespedes = int(cantidad_huespedes)
+        noches = int(noches)
+        monto_total = float(monto_total)
+
+        fecha_check_in = datetime.strptime(fecha_check_in_str, "%Y-%m-%d").date()
+        fecha_check_out = datetime.strptime(fecha_check_out_str, "%Y-%m-%d").date()
+
+    except (ValueError, TypeError):
+        return jsonify(
+            ok=False,
+            message="Formato de datos inválido al crear la reserva.",
+        ), 400
+
+    # 5) Validaciones simples de negocio
+    if fecha_check_out <= fecha_check_in:
+        return jsonify(
+            ok=False,
+            message="La fecha de salida debe ser posterior a la de entrada.",
+        ), 400
+
+    if cantidad_huespedes <= 0:
+        return jsonify(
+            ok=False,
+            message="La cantidad de huéspedes debe ser mayor a 0.",
+        ), 400
+
+    # 6) Generar un código de reserva "amigable" para el cliente
+    #    Ejemplo: HH-<idUsuario>-20251117193045
+    codigo_reserva = f"HH-{id_usuario}-{datetime.now().strftime('%Y%m%d%H%M%S')}"
+
+    # 7) Insertar en la base de datos
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    insert_sql = """
+        INSERT INTO reserva (
+            codigo_reserva,
+            id_usuario,
+            id_habitacion,
+            id_tarifa,
+            id_promocion,
+            fecha_check_in,
+            fecha_check_out,
+            cantidad_huespedes,
+            estado,
+            monto_total
+        )
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+    """
+
+    try:
+        cursor.execute(
+            insert_sql,
+            (
+                codigo_reserva,
+                id_usuario,
+                id_habitacion,
+                id_tarifa,
+                id_promocion,
+                fecha_check_in,
+                fecha_check_out,
+                cantidad_huespedes,
+                "confirmada",  # estado inicial
+                monto_total,
+            ),
+        )
+        conn.commit()
+
+    except Exception as e:
+        print("[ERROR] Al crear reserva:", e)
+        conn.rollback()
+        cursor.close()
+        conn.close()
+        return jsonify(
+            ok=False,
+            message="Ocurrió un error al guardar la reserva.",
+        ), 500
+
+    cursor.close()
+    conn.close()
+
+    # 8) Respuesta OK con URL de redirección a "Mis reservas"
+    return jsonify(
+        ok=True,
+        message="Reserva creada correctamente.",
+        redirect_url=url_for("mis_reservas.mis_reservas"),
+    ), 201

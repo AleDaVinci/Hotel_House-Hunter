@@ -5,6 +5,8 @@
 //   con sus tarifas, promociones y precios finales.
 // - Manejar el cambio de tarifa seleccionada y actualizar
 //   el "Total seleccionado" en cada card.
+// - Disparar la creación real de una reserva en el backend
+//   cuando el usuario presiona "Reservar".
 // -----------------------------------------------
 
 /**
@@ -31,7 +33,7 @@ function construirAmenidadesHtml(habitacion) {
              alt="${am.nombre}"
              title="${am.nombre}"
              class="amenidad-icon">
-      `
+      `,
     )
     .join("");
 }
@@ -81,6 +83,9 @@ function construirTarifasHtml(habitacion, noches) {
         `;
       }
 
+      // data-id-promocion: si hay promo, mandamos su id; si no, vacío/null
+      const idPromocionAttr = promo && promo.id_promocion ? promo.id_promocion : "";
+
       return `
       <label class="tarifa-option">
         <input type="radio"
@@ -88,17 +93,14 @@ function construirTarifasHtml(habitacion, noches) {
                name="tarifa_${habitacion.id_habitacion}"
                value="${t.id_tarifa}"
                data-total-final="${totalFinal}"
+               data-id-promocion="${idPromocionAttr}"
                ${index === 0 ? "checked" : ""}>
 
         <div class="tarifa-option__info">
           <div class="tarifa-option__header">
             <span class="tarifa-option__nombre">
               ${t.nombre}
-              ${
-                t.es_reembolsable
-                  ? "(Reembolsable)"
-                  : "(No reembolsable)"
-              }
+              ${t.es_reembolsable ? "(Reembolsable)" : "(No reembolsable)"}
             </span>
           </div>
           ${preciosHtml}
@@ -118,7 +120,7 @@ function inicializarEventosTarifas(contenedorHabitaciones, noches) {
 
   cards.forEach((card) => {
     const radios = card.querySelectorAll(
-      "input[type='radio'][name^='tarifa_']"
+      "input[type='radio'][name^='tarifa_']",
     );
     const totalLabel = card.querySelector(".habitacion-total");
     const nochesLabel = card.querySelector(".habitacion-total-noches");
@@ -143,7 +145,7 @@ function inicializarEventosTarifas(contenedorHabitaciones, noches) {
     actualizarTotal(); // inicial
 
     if (btnReservar) {
-      btnReservar.addEventListener("click", () => {
+      btnReservar.addEventListener("click", async () => {
         const seleccionado = Array.from(radios).find((r) => r.checked);
         if (!seleccionado) {
           alert("Por favor, seleccioná una tarifa.");
@@ -152,15 +154,75 @@ function inicializarEventosTarifas(contenedorHabitaciones, noches) {
 
         const idTarifa = seleccionado.value;
         const total = parseFloat(seleccionado.dataset.totalFinal || "0");
+        const idPromocion = seleccionado.dataset.idPromocion || null;
 
-        // Por ahora, solo mostramos un alert para debug.
-        // Luego esto va a disparar la creación real de la reserva.
-        alert(
-          `Reservar habitación ${idHabitacion}\n` +
-          `Tarifa seleccionada: ${idTarifa}\n` +
-          `Noches: ${noches}\n` +
-          `Total: ARS ${formatMoneyARS(total)}`
-        );
+        // Tomamos las fechas y cantidad de huéspedes del formulario
+        const inputFechaInicio = document.getElementById("fecha_inicio");
+        const inputFechaFin = document.getElementById("fecha_fin");
+        const inputPasajeros = document.getElementById("pasajeros");
+
+        const fechaCheckIn = inputFechaInicio ? inputFechaInicio.value : null;
+        const fechaCheckOut = inputFechaFin ? inputFechaFin.value : null;
+        const cantidadHuespedes = inputPasajeros
+          ? inputPasajeros.value
+          : null;
+
+        if (!fechaCheckIn || !fechaCheckOut || !cantidadHuespedes) {
+          alert(
+            "Faltan datos de la búsqueda (fechas o pasajeros). Volvé a realizar la búsqueda.",
+          );
+          return;
+        }
+
+        // Armamos el payload para el backend
+        const payload = {
+          id_habitacion: idHabitacion,
+          id_tarifa: idTarifa,
+          id_promocion: idPromocion || null,
+          fecha_check_in: fechaCheckIn,
+          fecha_check_out: fechaCheckOut,
+          cantidad_huespedes: cantidadHuespedes,
+          noches: noches,
+          monto_total: total,
+        };
+
+        try {
+          const resp = await fetch("/reservas/crear", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+          });
+
+          const data = await resp.json().catch(() => null);
+
+          if (!resp.ok || !data || data.ok === false) {
+            const msg =
+              (data && data.message) ||
+              "Ocurrió un error al crear la reserva. Intentá nuevamente.";
+            alert(msg);
+            // Si el backend envía redirect (por ejemplo a login), lo usamos
+            if (data && data.redirect) {
+              window.location.href = data.redirect;
+            }
+            return;
+          }
+
+          // Si todo salió bien, redirigimos a Mis Reservas
+          if (data.redirect_url) {
+            window.location.href = data.redirect_url;
+          } else {
+            // fallback: recargar página o mostrar mensaje
+            alert("Reserva creada correctamente.");
+            window.location.reload();
+          }
+        } catch (error) {
+          console.error("Error al crear la reserva:", error);
+          alert(
+            "Ocurrió un error de conexión al crear la reserva. Intentá nuevamente.",
+          );
+        }
       });
     }
   });
