@@ -53,7 +53,7 @@ vistas de la aplicación. - Define el layout general:
             >
               Mis reservas
             </a>
-            <a href="#" class="navbar__link">Contáctenos</a>
+            <a href="{{ url_for('main.contacto') }}" class="navbar__link">Contáctenos</a>
             <a href="{{ url_for('auth.logout') }}" class="btn btn--outline"
               >Logout</a
             >
@@ -65,10 +65,9 @@ vistas de la aplicación. - Define el layout general:
           <div class="navbar__center"></div>
 
           <div class="navbar__right">
-            <a href="{{ url_for('auth.login') }}" class="btn btn--ghost"
-              >Login</a
-            >
-            <a href="#" class="btn btn--primary">Sign up</a>
+            <a href="{{ url_for('auth.login') }}" class="btn btn--ghost">Login</a>
+           <a href="{{ url_for('auth.signup') }}" class="btn btn--primary">Sign up</a>
+           <a href="{{ url_for('main.contacto') }}" class="navbar__link">Contáctenos</a>
           </div>
           {% endif %}
         </nav>

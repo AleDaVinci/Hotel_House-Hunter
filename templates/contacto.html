@@ -1,0 +1,120 @@
+{# -----------------------------------------------------------------------------
+  Archivo: templates/contacto.html
+  Responsabilidad:
+    - Mostrar la página "Contáctenos" con:
+      * Datos de contacto del hotel.
+      * Formulario para enviar consultas/reclamos.
+    - Mantener la misma estética visual que login/signup.
+  Alcance:
+    - Accesible tanto para usuarios logueados como no logueados.
+    - Extiende base.html para navbar y estilos globales.
+ ----------------------------------------------------------------------------- #}
+{% extends "base.html" %}
+
+{% block title %}Contáctenos - Hotel House Hunter{% endblock %}
+
+{# Reutilizamos la misma clase de body para tomar el fondo tipo login #}
+{% block body_class %}page--login page--contacto{% endblock %}
+
+{% block content %}
+<section class="login-hero">
+  <!-- Overlay oscuro sobre la imagen de fondo -->
+  <div class="login-hero__overlay"></div>
+
+  <!-- Tarjeta centrada, reutilizando el estilo de login-card -->
+  <div class="login-card login-card--contacto">
+    <h1 class="login-card__title">Contáctenos</h1>
+    <p class="login-card__subtitle">
+      Envíenos su consulta o reclamo y nos pondremos en contacto a la brevedad.
+    </p>
+
+    <!-- Bloque para mensajes de "envío exitoso" simulados por JS -->
+    <div id="contactAlert" class="contact-alert" style="display: none;">
+      <!-- El texto se completa desde contacto.js -->
+    </div>
+
+    <!-- Datos de contacto del hotel -->
+    <div class="contact-info">
+      <h2 class="contact-info__title">Datos de contacto del hotel</h2>
+      <ul class="contact-info__list">
+        <li>
+          <strong>Dirección:</strong>
+          <span>Argentina, Ushuaia, Hipólito Yrigoyen 797</span>
+        </li>
+        <li>
+          <strong>Teléfono:</strong>
+          <span>+54 2901 976425</span>
+        </li>
+        <li>
+          <strong>Mail:</strong>
+          <span>+54 2901 976425</span>
+        </li>
+        <li>
+          <strong>Horario de atención:</strong>
+          <span>Todos los días, las 24 hs.</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Formulario de contacto -->
+    <form
+      id="contactForm"
+      class="login-form contact-form"
+      novalidate
+    >
+      <div class="form-group">
+        <label for="nombre">Nombre completo</label>
+        <input
+          type="text"
+          id="nombre"
+          name="nombre"
+          placeholder="Tu nombre y apellido"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="email">Correo electrónico</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          placeholder="tu@email.com"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="tipo">Motivo</label>
+        <select id="tipo" name="tipo" required>
+          <option value="">Seleccioná una opción</option>
+          <option value="consulta">Consulta general</option>
+          <option value="reserva">Consulta sobre una reserva</option>
+          <option value="reclamo">Reclamo</option>
+          <option value="otro">Otro</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="mensaje">Mensaje</label>
+        <textarea
+          id="mensaje"
+          name="mensaje"
+          rows="4"
+          placeholder="Escribí aquí tu consulta o reclamo"
+          required
+        ></textarea>
+      </div>
+
+      <button type="submit" class="btn btn--primary btn--full">
+        Enviar mensaje
+      </button>
+    </form>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+  <script src="{{ url_for('static', filename='js/contacto.js') }}"></script>
+{% endblock %}
+

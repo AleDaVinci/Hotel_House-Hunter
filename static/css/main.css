@@ -1062,6 +1062,46 @@ body {
 .reserva-card__details-list li + li {
   margin-top: 0.25rem;
 }
+/* Cartel de alerta en la vista de contacto */
+.contact-alert {
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.contact-alert--success {
+  background-color: rgba(46, 204, 113, 0.15);
+  border: 1px solid #2ecc71;
+  color: #2ecc71;
+}
+
+.contact-alert--error {
+  background-color: rgba(231, 76, 60, 0.15);
+  border: 1px solid #e74c3c;
+  color: #e74c3c;
+}
+
+/* Opcional: separar un poco datos de contacto y formulario */
+.contact-info {
+  margin-bottom: 1.5rem;
+}
+
+.contact-info__title {
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.contact-info__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.contact-info__list li {
+  margin-bottom: 0.25rem;
+}
 
 /* =========================
    RESPONSIVE NAVBAR (MÓVIL)

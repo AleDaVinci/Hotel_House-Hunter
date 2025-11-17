@@ -37,3 +37,15 @@ def dashboard():
 
     return render_template("dashboard.html", usuario=usuario)
 
+
+
+@main_bp.route("/contacto")
+def contacto():
+    """
+    Vista pública de contacto.
+    - Debe poder verse esté o no el usuario logueado.
+    - Si hay usuario en sesión, el navbar se muestra como 'logueado'.
+    """
+    usuario = session.get("usuario") 
+    return render_template("contacto.html", usuario=usuario)
+
