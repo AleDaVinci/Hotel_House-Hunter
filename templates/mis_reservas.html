@@ -26,6 +26,13 @@
 </section>
 
 <section class="misreservas-contenedor">
+    <section class="misreservas-contenedor">
+
+  <div class="misreservas-topbar">
+    <a href="{{ url_for('main.dashboard') }}" class="btn btn--return">
+      ← Volver al inicio
+    </a>
+  </div>
 
   {% if reservas and reservas|length > 0 %}
   

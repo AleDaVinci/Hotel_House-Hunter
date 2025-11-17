@@ -280,22 +280,33 @@ body {
    DASHBOARD
    ============================================================ */
 
-/* ----------- HERO DEL DASHBOARD ----------- */
-.page--dashboard {
+/* ----------- HERO DEL DASHBOARD + MIS RESERVAS ----------- */
+.page--dashboard,
+.page--mis-reservas {
   background: #0f172a; /* fallback */
 }
 
-.dashboard-hero {
+
+/* ----------- HERO DEL DASHBOARD + MIS RESERVAS ----------- */
+
+.dashboard-hero,
+.misreservas-hero {
   position: relative;
   height: 55vh;
   width: 100%;
   overflow: hidden;
+  
   display: flex;
-  align-items: center;
+  flex-direction: column;     
   justify-content: center;
+  align-items: center;        
+  text-align: center;         
+  gap: 0.6rem;                
 }
 
-.dashboard-hero__img {
+
+.dashboard-hero__img,
+.misreservas-hero__img {
   position: absolute;
   width: 100%;
   height: 100%;
@@ -305,7 +316,8 @@ body {
   z-index: 1;
 }
 
-.dashboard-hero__overlay {
+.dashboard-hero__overlay,
+.misreservas-hero__overlay {
   position: absolute;
   inset: 0;
   background: rgba(0,0,0,0.45);
@@ -313,7 +325,8 @@ body {
   z-index: 2;
 }
 
-.dashboard-hero__title {
+.dashboard-hero__title,
+.misreservas-hero__title {
   position: relative;
   z-index: 3;
   color: #fff;
@@ -321,6 +334,43 @@ body {
   font-weight: 600;
   text-shadow: 0 3px 12px rgba(0,0,0,0.8);
 }
+
+/* Subtítulo específico de Mis Reservas */
+.misreservas-hero__subtitle {
+  position: relative;
+  z-index: 3;
+  margin-top: 0.5rem;
+  font-size: 0.98rem;
+  opacity: 0.9;
+}
+/* ------ Barra superior con botón de volver ------ */
+.misreservas-topbar {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto 1rem auto;
+  display: flex;
+  justify-content: center;  
+}
+
+
+/* Botón marrón/naranja de "Volver al inicio" */
+.btn--return {
+  background: linear-gradient(135deg, #b87333, #d9923b);
+  color: #ffffff;
+  border: 1px solid rgba(255,255,255,0.15);
+  font-weight: 600;
+  padding: 0.55rem 1.2rem;
+  border-radius: 999px;
+  text-decoration: none;
+  transition: 0.2s ease;
+}
+
+.btn--return:hover {
+  background: linear-gradient(135deg, #99601f, #b7782a);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(217, 146, 59, 0.35);
+}
+
 
 
 /* ----------- TARJETA DE RESERVA ----------- */
@@ -523,7 +573,6 @@ body {
   gap: 0.75rem;
 }
 
-/* Opciones de tarifa (radio + texto) */
 /* Opciones de tarifa (card clickeable) */
 .tarifa-option {
   display: flex;
@@ -680,6 +729,182 @@ body {
 .campo-error {
   border: 1px solid #ff4d4d !important;
   box-shadow: 0 0 5px rgba(255,0,0,0.6);
+}
+/* ============================================================
+   MIS RESERVAS (vista independiente)
+   ============================================================ */
+
+.misreservas-contenedor {
+  width: 100%;
+  max-width: 900px;
+  margin: -40px auto 3rem auto;  /* se superpone un poquito al hero, como la reserva-box */
+  padding: 0 1rem;
+  position: relative;
+  z-index: 5;
+}
+
+.misreservas-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.2rem;
+}
+
+/* Mensaje cuando no hay reservas */
+.misreservas-empty {
+  margin-top: 1.5rem;
+  padding: 1.5rem 1.2rem;
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px dashed rgba(148, 163, 184, 0.6);
+  text-align: center;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+/* ----------- CARD DE RESERVA ----------- */
+
+.reserva-card {
+  background: rgba(255, 255, 255, 0.08);
+  padding: 1.2rem 1.3rem;
+  border-radius: 0.9rem;
+  box-shadow: 0 18px 35px rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(148, 163, 184, 0.35);
+}
+
+.reserva-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 0.8rem;
+}
+
+.reserva-card__title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.reserva-card__codigo {
+  margin: 0.15rem 0 0;
+  font-size: 0.85rem;
+  opacity: 0.85;
+}
+
+/* Estado de la reserva (pill) */
+.reserva-card__estado {
+  padding: 0.25rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* Colores según estado (valores vienen de la BD: pendiente, confirmada, cancelada, finalizada) */
+.estado--pendiente {
+  background: rgba(234, 179, 8, 0.16);
+  color: #facc15;
+}
+
+.estado--confirmada {
+  background: rgba(34, 197, 94, 0.16);
+  color: #4ade80;
+}
+
+.estado--cancelada {
+  background: rgba(248, 113, 113, 0.16);
+  color: #f87171;
+}
+
+.estado--finalizada {
+  background: rgba(59, 130, 246, 0.16);
+  color: #60a5fa;
+}
+
+/* Cuerpo con datos (fechas, huéspedes, tarifa, total) */
+.reserva-card__body {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 0.7rem 1.2rem;
+  margin-bottom: 0.9rem;
+}
+
+.reserva-card__group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.reserva-card__label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  opacity: 0.75;
+}
+
+.reserva-card__value {
+  font-size: 0.96rem;
+}
+
+/* Footer: botones */
+.reserva-card__footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding-top: 0.6rem;
+  border-top: 1px solid rgba(148, 163, 184, 0.5);
+}
+
+/* Form inline para que el botón Cancelar quede al lado */
+.inline-form {
+  display: inline;
+  margin: 0;
+}
+
+/* Botones pequeños específicos de Mis Reservas */
+.btn-sm {
+  font-size: 0.8rem;
+  padding: 0.3rem 0.75rem;
+}
+
+/* Botón de peligro (cancelar reserva) */
+.btn--danger {
+  background: #ef4444;
+  color: #ffffff;
+  border-color: transparent;
+}
+
+.btn--danger:hover {
+  background: #dc2626;
+}
+
+/* Detalle oculto/visible dentro del card */
+.reserva-card__details {
+  margin-top: 0.8rem;
+  padding-top: 0.7rem;
+  border-top: 1px dashed rgba(148, 163, 184, 0.6);
+  font-size: 0.88rem;
+  line-height: 1.5;
+  display: none; /* por defecto oculto */
+}
+
+.reserva-card__details--open {
+  display: block;
+}
+
+.reserva-card__details-title {
+  margin: 0 0 0.4rem;
+  font-weight: 600;
+}
+
+.reserva-card__details-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.reserva-card__details-list li + li {
+  margin-top: 0.25rem;
 }
 
 /* =========================
