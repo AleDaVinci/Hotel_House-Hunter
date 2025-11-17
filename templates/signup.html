@@ -1,0 +1,138 @@
+{# -----------------------------------------------------------------------------
+  Archivo: templates/signup.html
+  Responsabilidad:
+    - Mostrar la pantalla de registro (signup) para nuevos usuarios.
+    - Misma estética que la pantalla de login.
+  Alcance:
+    - Extiende de base.html para reutilizar navbar y estilos globales.
+ ----------------------------------------------------------------------------- #}
+{% extends "base.html" %}
+
+{% block title %}Crear cuenta - Hotel House Hunter{% endblock %}
+
+{# Reutilizamos la misma clase de body para que tome el mismo fondo #}
+{% block body_class %}page--login page--signup{% endblock %}
+
+{% block content %}
+<section class="login-hero">
+  <!-- Overlay oscuro sobre la imagen de fondo -->
+  <div class="login-hero__overlay"></div>
+
+  <!-- Tarjeta centrada, reutilizando el estilo de login-card -->
+  <div class="login-card login-card--signup">
+    <h1 class="login-card__title">Crear cuenta</h1>
+    <p class="login-card__subtitle">
+      Registrate para gestionar tus reservas online.
+    </p>
+
+    {# Mensajes flash de error/success #}
+    {% with mensajes = get_flashed_messages(with_categories=True) %}
+      {% if mensajes %}
+        <div class="login-alerts">
+          {% for categoria, mensaje in mensajes %}
+            <div class="alert alert--{{ categoria }}">
+              {{ mensaje }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <form
+      class="login-form"
+      id="signupForm"
+      method="post"
+      action="{{ url_for('auth.signup') }}"
+      novalidate
+    >
+      <div class="form-group">
+        <label for="nombre">Nombre</label>
+        <input
+          type="text"
+          id="nombre"
+          name="nombre"
+          placeholder="Tu nombre"
+          required
+          value="{{ form_data.nombre if form_data is defined }}"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="apellido">Apellido</label>
+        <input
+          type="text"
+          id="apellido"
+          name="apellido"
+          placeholder="Tu apellido"
+          required
+          value="{{ form_data.apellido if form_data is defined }}"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="email">Correo electrónico</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          placeholder="tu@email.com"
+          required
+          value="{{ form_data.email if form_data is defined }}"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="telefono">Teléfono (opcional)</label>
+        <input
+          type="tel"
+          id="telefono"
+          name="telefono"
+          placeholder="+54 9 ..."
+          value="{{ form_data.telefono if form_data is defined }}"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="password">Contraseña</label>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          placeholder="Mínimo 6 caracteres"
+          required
+          minlength="6"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="password_confirm">Confirmar contraseña</label>
+        <input
+          type="password"
+          id="password_confirm"
+          name="password_confirm"
+          placeholder="Repetí tu contraseña"
+          required
+          minlength="6"
+        />
+      </div>
+
+      <p id="passwordError" class="form-error" style="display:none;">
+        Las contraseñas no coinciden.
+      </p>
+
+      <button type="submit" class="btn btn--primary btn--full">
+        Crear cuenta
+      </button>
+    </form>
+
+    <p class="login-card__footer">
+      ¿Ya tienes cuenta?
+      <a href="{{ url_for('auth.login') }}" class="login-card__link">Iniciar sesión</a>
+    </p>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+  <script src="{{ url_for('static', filename='js/signup.js') }}"></script>
+{% endblock %}

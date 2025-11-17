@@ -55,8 +55,7 @@
 
     <p class="login-card__footer">
       ¿No tienes cuenta?
-      <a href="#" class="login-card__link">Crear cuenta</a>
-      {# Luego este link irá a la ruta real de signup #}
+      <a href="{{ url_for('auth.signup') }}" class="login-card__link">Crear cuenta</a>
     </p>
   </div>
 </section>

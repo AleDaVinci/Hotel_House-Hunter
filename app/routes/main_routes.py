@@ -10,6 +10,7 @@
 # -----------------------------------------------------------------------------
 
 from flask import Blueprint, render_template, session
+from flask import Blueprint, render_template, session, redirect, url_for
 
 # Creamos un Blueprint para agrupar estas rutas bajo el nombre "main"
 main_bp = Blueprint("main", __name__)
