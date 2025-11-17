@@ -1,18 +1,16 @@
-{% extends "base.html" %}
-
-{% block title %}Dashboard - Hotel House Hunter{% endblock %}
-
-{% block body_class %}page--dashboard{% endblock %}
-
-{% block content %}
+{% extends "base.html" %} {% block title %}Dashboard - Hotel House Hunter{%
+endblock %} {% block body_class %}page--dashboard{% endblock %} {% block content
+%}
 
 <!-- ================= HERO ================= -->
 <section class="dashboard-hero">
   <div class="dashboard-hero__overlay"></div>
-  <img src="{{ url_for('static', filename='img/hotel-bg.jpg') }}" class="dashboard-hero__img">
+  <img
+    src="{{ url_for('static', filename='img/hotel-bg.jpg') }}"
+    class="dashboard-hero__img"
+  />
   <h1 class="dashboard-hero__title">Bienvenido, {{ usuario.nombre }}</h1>
 </section>
-
 
 <!-- ================= RESERVAR ONLINE ================= -->
 <section class="reserva-box">
@@ -21,149 +19,220 @@
   <form class="reserva-form" id="buscarForm">
     <div class="form-group">
       <label>Fecha de entrada</label>
-      <input type="date" required id="fecha_inicio">
+      <input type="date" required id="fecha_inicio" />
     </div>
 
     <div class="form-group">
       <label>Fecha de salida</label>
-      <input type="date" required id="fecha_fin">
+      <input type="date" required id="fecha_fin" />
     </div>
 
     <div class="form-group">
       <label>Pasajeros</label>
-      <input type="number" min="1" max="6" value="1" required id="pasajeros">
+      <input type="number" min="1" max="6" value="1" required id="pasajeros" />
     </div>
 
     <button type="submit" class="btn btn--primary btn--full">Buscar</button>
   </form>
 </section>
 
-
 <!-- ================= TABS ================= -->
 <section class="dashboard-tabs">
-  <button class="tab-btn active" data-target="tab-descripcion">Descripción</button>
+  <button class="tab-btn active" data-target="tab-descripcion">
+    Descripción
+  </button>
   <button class="tab-btn" data-target="tab-habitaciones">Habitaciones</button>
   <button class="tab-btn" data-target="tab-fotos">Fotos</button>
   <button class="tab-btn" data-target="tab-resenas">Reseñas</button>
 </section>
 
-
 <!-- ================= CONTENIDO DINÁMICO ================= -->
 <section class="dashboard-content">
+  <!-- === DESCRIPCION === -->
+  <div id="tab-descripcion" class="tab-content active">
+    <div class="descripcion-box">
+      <h2>Experiencia de Confort</h2>
+      <p>
+        Bienvenido a <strong>Hotel House Hunter</strong>, un hotel boutique con
+        más de <strong>30 años de trayectoria</strong> en la ciudad más austral
+        del mundo: <strong>Ushuaia</strong>. Nuestro compromiso siempre ha sido
+        brindar un ambiente <strong>cálido, familiar y acogedor</strong>,
+        pensado para que cada huésped se sienta como en casa desde el primer
+        instante.
+      </p>
 
-    <!-- === DESCRIPCION === -->
-<div id="tab-descripcion" class="tab-content active">
-  <div class="descripcion-box">
-    <h2>Experiencia de Confort</h2>
-    <p>
-      Bienvenido a <strong>Hotel House Hunter</strong>, un hotel boutique con más de 
-      <strong>30 años de trayectoria</strong> en la ciudad más austral del mundo: <strong>Ushuaia</strong>. 
-      Nuestro compromiso siempre ha sido brindar un ambiente <strong>cálido, familiar y acogedor</strong>, 
-      pensado para que cada huésped se sienta como en casa desde el primer instante.
-    </p>
+      <p>
+        Contamos con solo <strong>8 habitaciones exclusivas</strong>,
+        cuidadosamente diseñadas para ofrecer una experiencia íntima y
+        personalizada. Disponemos de opciones que van desde
+        <strong>habitaciones singles</strong> ideales para viajeros solitarios,
+        hasta espaciosas <strong>cuádruples</strong> pensadas para familias que
+        buscan confort y tranquilidad en un entorno natural único.
+      </p>
 
-    <p>
-      Contamos con solo <strong>8 habitaciones exclusivas</strong>, cuidadosamente diseñadas para ofrecer 
-      una experiencia íntima y personalizada. Disponemos de opciones que van desde 
-      <strong>habitaciones singles</strong> ideales para viajeros solitarios, 
-      hasta espaciosas <strong>cuádruples</strong> pensadas para familias que buscan 
-      confort y tranquilidad en un entorno natural único.
-    </p>
+      <p>
+        Nuestra ubicación es verdaderamente privilegiada: estamos situados a
+        menos de
+        <strong>5 minutos del Aeropuerto Internacional de Ushuaia</strong>, y a
+        solo <strong>15 cuadras del centro urbano</strong>, lo que garantiza un
+        acceso rápido a los principales comercios, atractivos y servicios de la
+        ciudad. Desde el hotel podrás disfrutar de vistas imponentes a la
+        <strong>Cordillera de los Andes</strong> y al majestuoso
+        <strong>Canal Beagle</strong>, un escenario perfecto para quienes buscan
+        naturaleza y paisajes patagónicos inolvidables.
+      </p>
 
-    <p>
-      Nuestra ubicación es verdaderamente privilegiada: estamos situados a menos de <strong>5 minutos del Aeropuerto Internacional de Ushuaia</strong>, 
-      y a solo <strong>15 cuadras del centro urbano</strong>, lo que garantiza un acceso rápido a los 
-      principales comercios, atractivos y servicios de la ciudad. 
-      Desde el hotel podrás disfrutar de vistas imponentes a la <strong>Cordillera de los Andes</strong> 
-      y al majestuoso <strong>Canal Beagle</strong>, un escenario perfecto para quienes buscan 
-      naturaleza y paisajes patagónicos inolvidables.
-    </p>
+      <p>
+        House Hunter es el punto de partida ideal para realizar
+        <strong>excursiones</strong>, actividades al aire libre, trekking,
+        navegación y visitas a los parques naturales más reconocidos de Tierra
+        del Fuego.
+      </p>
 
-    <p>
-      House Hunter es el punto de partida ideal para realizar <strong>excursiones</strong>, 
-      actividades al aire libre, trekking, navegación y visitas a los parques naturales 
-      más reconocidos de Tierra del Fuego.
-    </p>
+      <p>
+        Todas nuestras tarifas incluyen un
+        <strong>desayuno buffet</strong> servido de
+        <strong>7:00 a 10:00 hs</strong>, con una variedad de opciones frescas
+        para comenzar el día con energía. El <strong>check-in</strong> se
+        realiza a partir de las <strong>14:00 hs</strong> y el
+        <strong>check-out</strong> es hasta las <strong>10:00 hs</strong>.
+        Nuestro equipo de
+        <strong>recepción está disponible las 24 horas</strong> para asistir en
+        lo que necesites.
+      </p>
 
-    <p>
-      Todas nuestras tarifas incluyen un <strong>desayuno buffet</strong> servido de 
-      <strong>7:00 a 10:00 hs</strong>, con una variedad de opciones frescas para comenzar el día con energía. 
-      El <strong>check-in</strong> se realiza a partir de las <strong>14:00 hs</strong> y el 
-      <strong>check-out</strong> es hasta las <strong>10:00 hs</strong>. 
-      Nuestro equipo de <strong>recepción está disponible las 24 horas</strong> para asistir en lo que necesites.
-    </p>
+      <p>
+        Si bien el establecimiento
+        <strong>no cuenta con restaurante propio</strong>, permitimos el ingreso
+        de <strong>comidas y bebidas</strong>, y también ofrecemos
+        recomendaciones de los mejores locales gastronómicos de la zona.
+      </p>
 
-    <p>
-      Si bien el establecimiento <strong>no cuenta con restaurante propio</strong>, 
-      permitimos el ingreso de <strong>comidas y bebidas</strong>, y también ofrecemos recomendaciones 
-      de los mejores locales gastronómicos de la zona.
-    </p>
+      <p style="margin-top: 1.2rem">
+        <strong>Dirección:</strong> Argentina, Ushuaia, Hipólito Yrigoyen 797<br />
+        <strong>Teléfono:</strong> +54 2901 976425<br />
+        <strong>Email:</strong> hunter-reservas@gmail.com
+      </p>
 
-    <p style="margin-top: 1.2rem;">
-      <strong>Dirección:</strong> Argentina, Ushuaia, Hipólito Yrigoyen 797<br>
-      <strong>Teléfono:</strong> +54 2901 976425<br>
-      <strong>Email:</strong> hunter-reservas@gmail.com
-    </p>
+      <!-- === UBICACIÓN / MAPA === -->
+      <div class="map-box">
+        <h3>Ubicación</h3>
+        <p class="map-box__address">
+          Argentina, Ushuaia, Hipólito Yrigoyen 797
+        </p>
 
-
-    <!-- === UBICACIÓN / MAPA === -->
-    <div class="map-box">
-          <h3>Ubicación</h3>
-          <p class="map-box__address">
-            Argentina, Ushuaia, Hipólito Yrigoyen 797
-          </p>
-
-          <div class="map-box__frame">
-            <iframe
-              src="https://www.google.com/maps?q=Argentina,+Ushuaia,+Hipolito+Yrigoyen+797&output=embed"
-              width="100%"
-              height="100%"
-              style="border:0;"
-              allowfullscreen=""
-              loading="lazy"
-              referrerpolicy="no-referrer-when-downgrade">
-            </iframe>
-          </div>
+        <div class="map-box__frame">
+          <iframe
+            src="https://www.google.com/maps?q=Argentina,+Ushuaia,+Hipolito+Yrigoyen+797&output=embed"
+            width="100%"
+            height="100%"
+            style="border: 0"
+            allowfullscreen=""
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+          >
+          </iframe>
         </div>
-        <!-- === FIN UBICACIÓN === -->
+      </div>
+      <!-- === FIN UBICACIÓN === -->
     </div>
   </div>
 
-    <!-- === HABITACIONES === -->
-    <div id="tab-habitaciones" class="tab-content">
-        <div class="habitacion-card">
-            <img src="{{ url_for('static', filename='img/habitaciones/f1.jpg') }}" class="habitacion-card__img">
-            <div class="habitacion-card__body">
-                <h3>Habitación Standard</h3>
-                <p>Ideal para 2 personas...</p>
-            </div>
-        </div>
+  <!-- === HABITACIONES === -->
+  <div id="tab-habitaciones" class="tab-content">
+    <div class="habitacion-card">
+      <img
+        src="{{ url_for('static', filename='img/habitaciones/f1.jpg') }}"
+        class="habitacion-card__img"
+      />
+      <div class="habitacion-card__body">
+        <h3>Habitación Standard</h3>
+        <p>Ideal para 2 personas...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- === FOTOS === -->
+  <div id="tab-fotos" class="tab-content">
+    <div class="fotos-grid">
+      <img src="{{ url_for('static', filename='img/foto1.jpg') }}" />
+      <img src="{{ url_for('static', filename='img/foto2.jpg') }}" />
+      <img src="{{ url_for('static', filename='img/foto3.jpg') }}" />
+      <img src="{{ url_for('static', filename='img/foto4.jpg') }}" />
+      <img src="{{ url_for('static', filename='img/foto5.jpg') }}" />
+      <img src="{{ url_for('static', filename='img/f1.jpg') }}" />
+      <img src="{{ url_for('static', filename='img/f2.jpg') }}" />
+      <img src="{{ url_for('static', filename='img/f3.jpg') }}" />
+      <img src="{{ url_for('static', filename='img/f4.jpg') }}" />
+    </div>
+  </div>
+
+  <!-- === RESEÑAS === -->
+  <div id="tab-resenas" class="tab-content">
+    <!-- Reseña 1 -->
+    <div class="resena-card">
+      <strong>Juan P.</strong>
+      <p>
+        Excelente experiencia. La habitación muy cómoda y el personal siempre
+        atento. Las vistas al Canal Beagle son increíbles. Volvería sin dudarlo.
+      </p>
+      <small>★ ★ ★ ★ ★</small>
     </div>
 
-
-    <!-- === FOTOS === -->
-    <div id="tab-fotos" class="tab-content">
-        <div class="fotos-grid">
-            <img src="{{ url_for('static', filename='img/f1.jpg') }}">
-            <img src="{{ url_for('static', filename='img/f2.jpg') }}">
-            <img src="{{ url_for('static', filename='img/f3.jpg') }}">
-            <img src="{{ url_for('static', filename='img/f4.jpg') }}">
-        </div>
+    <!-- Reseña 2 -->
+    <div class="resena-card">
+      <strong>Mariana T.</strong>
+      <p>
+        El hotel es pequeño pero súper acogedor. El desayuno buffet estuvo muy
+        completo. Destaco la ubicación, cerca del centro y del aeropuerto.
+      </p>
+      <small>★ ★ ★ ★ ☆</small>
     </div>
 
-    <!-- === RESEÑAS === -->
-    <div id="tab-resenas" class="tab-content">
-        <div class="resena-card">
-            <strong>Juan P.</strong>
-            <p>Excelente experiencia...</p>
-        </div>
+    <!-- Reseña 3 -->
+    <div class="resena-card">
+      <strong>Carlos D.</strong>
+      <p>
+        Muy buena atención del personal. La habitación triple que nos tocó fue
+        amplia y luminosa. Ideal para familias.
+      </p>
+      <small>★ ★ ★ ★ ★</small>
     </div>
 
-  </section>
+    <!-- Reseña 4 -->
+    <div class="resena-card">
+      <strong>Lucía R.</strong>
+      <p>
+        Todo excelente, aunque el WiFi podría ser un poco más rápido. Aun así,
+        la comodidad del hotel hace que valga totalmente la pena.
+      </p>
+      <small>★ ★ ★ ★ ☆</small>
+    </div>
 
+    <!-- Reseña 5 -->
+    <div class="resena-card">
+      <strong>Federico A.</strong>
+      <p>
+        Muy buena relación precio/calidad. Me sorprendió la limpieza y el
+        profesionalismo del equipo. Recomendado para quienes buscan
+        tranquilidad.
+      </p>
+      <small>★ ★ ★ ★ ★</small>
+    </div>
+
+    <!-- Reseña 6 -->
+    <div class="resena-card">
+      <strong>Sofía M.</strong>
+      <p>
+        Hermoso hotel boutique. La decoración, la atención y la ubicación son
+        excelentes. Despertarse viendo la cordillera no tiene precio.
+      </p>
+      <small>★ ★ ★ ★ ★</small>
+    </div>
+  </div>
+</section>
+
+{% endblock %} {% block scripts %}
+<script src="{{ url_for('static', filename='js/precios.js') }}"></script>
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
 {% endblock %}
-{% block scripts %}
-  <script src="{{ url_for('static', filename='js/precios.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
-{% endblock %}
-
