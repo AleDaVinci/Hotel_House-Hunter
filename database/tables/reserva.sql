@@ -18,7 +18,7 @@
 --   - Registra la cantidad de huéspedes.
 --   - Registra el importe total calculado en el momento de la reserva.
 --   - Mantiene un estado de la reserva (pendiente, confirmada, cancelada, finalizada).
---
+--   - Incluye un flag "es_visible" para soft delete a nivel usuario.
 -- ============================================================
 
 -- DROP TABLE IF EXISTS `reserva`; 
@@ -47,6 +47,11 @@ CREATE TABLE IF NOT EXISTS `reserva` (
   `estado` VARCHAR(20) NOT NULL DEFAULT 'pendiente' COMMENT 'Estado actual de la reserva',
 
   `monto_total` DECIMAL(10,2) NOT NULL COMMENT 'Importe total calculado para toda la estadía (n noches)',
+
+  -- Flag de soft delete a nivel vista del usuario:
+  --   1 = visible en "Mis reservas"
+  --   0 = oculta para el usuario (soft delete), pero la fila sigue existiendo
+  `es_visible` TINYINT(1) NOT NULL DEFAULT 1 COMMENT 'Indica si la reserva se muestra en Mis Reservas para el usuario',
 
   `creado_en` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Fecha y hora de creación de la reserva',
   `actualizado_en` DATETIME NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT 'Última fecha y hora de modificación',

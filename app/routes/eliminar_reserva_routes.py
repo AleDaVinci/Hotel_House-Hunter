@@ -1,43 +1,37 @@
 # -----------------------------------------------------------------------------
 # Archivo: app/routes/mis_reservas_routes.py
 # Responsabilidad:
-#   - Exponer la vista "Mis reservas" del cliente.
-#   - Listar las reservas del usuario logueado.
-#   - Permitir acciones sobre cada reserva:
-#       * Cancelar (estado = 'cancelada')
-#       * Eliminar del listado (soft delete con es_visible = 0)
+#   - Manejar la vista "Mis reservas" del usuario logueado.
+#   - Listar solo las reservas visibles (soft delete con campo es_visible).
+#   - Permitir cancelar una reserva (estado = 'cancelada').
+#   - Permitir eliminarla del listado del usuario (es_visible = 0).
 #
 # Alcance:
-#   - Este módulo trabaja SOLO con reservas del cliente final.
-#   - No calcula precios ni disponibilidades (eso sigue en reserva_routes.py).
-#   - Usa la conexión MySQL centralizada en database/connection.py.
+#   - Se accede desde el navbar y desde redirecciones del flujo de reserva.
+#   - Trabaja junto con la plantilla templates/mis_reservas.html.
 # -----------------------------------------------------------------------------
 
 from flask import (
     Blueprint,
     render_template,
+    session,
     redirect,
     url_for,
-    session,
     flash,
 )
 from database.connection import get_connection
 
-# Creamos un Blueprint específico para "Mis reservas"
-# Nombre del blueprint: "mis_reservas"
-mis_reservas_bp = Blueprint("mis_reservas", __name__)
+mis_reservas_bp = Blueprint("mis_reservas", __name__, url_prefix="/mis-reservas")
 
 
 # -----------------------------------------------------------------------------
-# Ruta: GET /mis-reservas
+# Ruta: GET /mis-reservas/
 # Responsabilidad:
-#   - Mostrar todas las reservas del usuario logueado.
+#   - Mostrar el listado de reservas del usuario logueado.
 #   - Solo mostrar reservas con es_visible = 1 (soft delete aplicado).
-#   - Si no hay sesión, redirigir al login.
 # -----------------------------------------------------------------------------
-@mis_reservas_bp.route("/mis-reservas", methods=["GET"])
+@mis_reservas_bp.route("/", methods=["GET"])
 def mis_reservas():
-    # 1) Verificar sesión
     usuario = session.get("usuario")
     if not usuario:
         flash("Debes iniciar sesión para ver tus reservas.", "error")
@@ -45,11 +39,10 @@ def mis_reservas():
 
     id_usuario = usuario["id"]
 
-    # 2) Conectar a la BD y traer reservas del usuario
     conn = get_connection()
     cursor = conn.cursor(dictionary=True)
 
-    query = """
+    sql = """
         SELECT
             r.id_reserva,
             r.codigo_reserva,
@@ -62,17 +55,15 @@ def mis_reservas():
             h.nombre AS habitacion_nombre,
             t.nombre AS tarifa_nombre
         FROM reserva AS r
-        JOIN habitacion AS h
-            ON h.id_habitacion = r.id_habitacion
-        JOIN tarifa AS t
-            ON t.id_tarifa = r.id_tarifa
+        JOIN habitacion AS h ON h.id_habitacion = r.id_habitacion
+        JOIN tarifa     AS t ON t.id_tarifa     = r.id_tarifa
         WHERE r.id_usuario = %s
           AND r.es_visible = 1
         ORDER BY r.fecha_check_in DESC
     """
 
     try:
-        cursor.execute(query, (id_usuario,))
+        cursor.execute(sql, (id_usuario,))
         reservas = cursor.fetchall()
     except Exception as e:
         print("[ERROR] Al listar reservas del usuario:", e)
@@ -82,7 +73,6 @@ def mis_reservas():
         cursor.close()
         conn.close()
 
-    # 3) Renderizar la plantilla con la lista de reservas
     return render_template(
         "mis_reservas.html",
         usuario=usuario,
@@ -91,12 +81,13 @@ def mis_reservas():
 
 
 # -----------------------------------------------------------------------------
-# Ruta: POST /reservas/<id_reserva>/cancelar
+# Ruta: POST /mis-reservas/cancelar/<id_reserva>
 # Responsabilidad:
-#   - Cambiar el estado de una reserva a "cancelada".
-#   - Solo permite cancelar reservas del usuario logueado.
+#   - Cambiar el estado de la reserva a 'cancelada'.
+#   - No elimina la fila ni la oculta: sigue visible para que el usuario
+#     pueda verla y, si quiere, eliminarla del listado con el tacho.
 # -----------------------------------------------------------------------------
-@mis_reservas_bp.route("/reservas/<int:id_reserva>/cancelar", methods=["POST"])
+@mis_reservas_bp.route("/cancelar/<int:id_reserva>", methods=["POST"])
 def cancelar_reserva(id_reserva):
     usuario = session.get("usuario")
     if not usuario:
@@ -118,15 +109,7 @@ def cancelar_reserva(id_reserva):
     try:
         cursor.execute(update_sql, (id_reserva, id_usuario))
         conn.commit()
-
-        if cursor.rowcount == 0:
-            flash(
-                "No se pudo cancelar la reserva (no encontrada o no te pertenece).",
-                "error",
-            )
-        else:
-            flash("La reserva fue cancelada correctamente.", "success")
-
+        flash("La reserva fue cancelada correctamente.", "success")
     except Exception as e:
         print("[ERROR] Al cancelar reserva:", e)
         conn.rollback()
@@ -135,19 +118,18 @@ def cancelar_reserva(id_reserva):
         cursor.close()
         conn.close()
 
-    # Siempre volvemos a la vista "Mis reservas"
     return redirect(url_for("mis_reservas.mis_reservas"))
 
 
 # -----------------------------------------------------------------------------
-# Ruta: POST /reservas/<id_reserva>/eliminar
+# Ruta: POST /mis-reservas/eliminar/<id_reserva>
 # Responsabilidad:
 #   - Soft delete: marcar la reserva como "no visible" para el usuario,
 #     sin borrarla físicamente de la base de datos.
 #   - Se usa cuando el usuario presiona el icono de tacho de basura
 #     en el cuadro de "Mis reservas".
 # -----------------------------------------------------------------------------
-@mis_reservas_bp.route("/reservas/<int:id_reserva>/eliminar", methods=["POST"])
+@mis_reservas_bp.route("/eliminar/<int:id_reserva>", methods=["POST"])
 def eliminar_reserva(id_reserva):
     usuario = session.get("usuario")
     if not usuario:
@@ -169,15 +151,7 @@ def eliminar_reserva(id_reserva):
     try:
         cursor.execute(update_sql, (id_reserva, id_usuario))
         conn.commit()
-
-        if cursor.rowcount == 0:
-            flash(
-                "No se pudo eliminar la reserva del listado (no encontrada o no te pertenece).",
-                "error",
-            )
-        else:
-            flash("La reserva fue eliminada de tu listado.", "success")
-
+        flash("La reserva fue eliminada de tu listado.", "success")
     except Exception as e:
         print("[ERROR] Al hacer soft delete de reserva:", e)
         conn.rollback()

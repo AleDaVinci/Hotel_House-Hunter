@@ -36,6 +36,7 @@ app.register_blueprint(mis_reservas_bp)
 app.register_blueprint(modificar_reserva_bp)
 
 
+
 if __name__ == "__main__":
     # Ejecutar la app en modo debug para desarrollo local
     app.run(debug=True)

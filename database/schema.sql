@@ -266,6 +266,7 @@ CREATE TABLE IF NOT EXISTS `reserva` (
   `estado` VARCHAR(20) NOT NULL DEFAULT 'pendiente' COMMENT 'Estado actual de la reserva',
 
   `monto_total` DECIMAL(10,2) NOT NULL COMMENT 'Importe total calculado para toda la estadía (n noches)',
+  `es_visible` TINYINT(1) NOT NULL DEFAULT 1 COMMENT 'Indica si la reserva se muestra en Mis Reservas para el usuario',
 
   `creado_en` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Fecha y hora de creación de la reserva',
   `actualizado_en` DATETIME NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT 'Última fecha y hora de modificación',
