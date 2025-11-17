@@ -3,7 +3,7 @@
   Responsabilidad:
     - Página independiente "Mis reservas"
     - Mostrar todas las reservas del usuario logueado
-    - Permitir cancelar y ver detalles de cada reserva
+    - Permitir cancelar, ver detalles y MODIFICAR cada reserva
   Alcance:
     - Se accede desde el navbar o tras crear una reserva
     - Extiende base.html para reutilizar navbar y estilos globales
@@ -26,7 +26,6 @@
 </section>
 
 <section class="misreservas-contenedor">
-    <section class="misreservas-contenedor">
 
   <div class="misreservas-topbar">
     <a href="{{ url_for('main.dashboard') }}" class="btn btn--return">
@@ -39,7 +38,11 @@
     <div class="misreservas-grid">
 
       {% for r in reservas %}
-      <article class="reserva-card" data-reserva-id="{{ r.id_reserva }}">
+      <article class="reserva-card"
+               data-reserva-id="{{ r.id_reserva }}"
+               data-fecha-check-in="{{ r.fecha_check_in.strftime('%Y-%m-%d') }}"
+               data-fecha-check-out="{{ r.fecha_check_out.strftime('%Y-%m-%d') }}"
+               data-monto-total="{{ '%.2f'|format(r.monto_total) }}">
         
         <!-- ENCABEZADO -->
         <header class="reserva-card__header">
@@ -107,6 +110,12 @@
           </button>
 
           {% if r.estado != "cancelada" %}
+          <button
+            type="button"
+            class="btn btn-sm btn--secondary js-abrir-modificar">
+            Modificar reserva
+          </button>
+
           <form action="{{ url_for('mis_reservas.cancelar_reserva', id_reserva=r.id_reserva) }}"
                 method="POST"
                 class="inline-form">
@@ -138,6 +147,100 @@
           </ul>
         </div>
 
+        <!-- PANEL DE MODIFICACIÓN (oculto por defecto, se maneja con JS) -->
+        {% if r.estado != "cancelada" %}
+        <div class="reserva-card__edit" data-edit-panel>
+          <p class="reserva-card__details-title">Modificar esta reserva</p>
+
+          <p class="reserva-card__edit-text">
+            Podés agregar o quitar días a tu estadía. El sistema recalculará el
+            total con las tarifas y promociones vigentes y validará la disponibilidad
+            de la habitación.
+          </p>
+
+          <!-- Resumen de fechas y costos -->
+          <div class="reserva-card__edit-resumen">
+            <div>
+              <span class="reserva-card__label">Fechas originales</span>
+              <div class="reserva-card__value edit-fechas-originales">
+                {{ r.fecha_check_in.strftime('%d/%m/%Y') }}
+                &nbsp;→&nbsp;
+                {{ r.fecha_check_out.strftime('%d/%m/%Y') }}
+              </div>
+            </div>
+
+            <div>
+              <span class="reserva-card__label">Fechas nuevas</span>
+              <div class="reserva-card__value edit-fechas-nuevas">
+                <!-- JS llenará esto al simular -->
+              </div>
+            </div>
+
+            <div>
+              <span class="reserva-card__label">Total actual</span>
+              <div class="reserva-card__value edit-total-actual">
+                $ {{ "%.2f"|format(r.monto_total) }}
+              </div>
+            </div>
+
+            <div>
+              <span class="reserva-card__label">Nuevo total estimado</span>
+              <div class="reserva-card__value edit-total-nuevo">
+                <!-- JS llenará esto al simular -->
+              </div>
+            </div>
+
+            <div>
+              <span class="reserva-card__label">Diferencia</span>
+              <div class="reserva-card__value edit-diferencia">
+                <!-- JS llenará esto al simular -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Controles para sumar / restar días -->
+          <div class="reserva-card__edit-controles">
+            <span class="reserva-card__label">Ajustar duración</span>
+            <div class="edit-controles-botones">
+              <button type="button"
+                      class="btn btn-sm btn--outline js-modificar-restar-dia">
+                − Quitar 1 día
+              </button>
+              <button type="button"
+                      class="btn btn-sm btn--outline js-modificar-sumar-dia">
+                + Agregar 1 día
+              </button>
+            </div>
+            <p class="reserva-card__edit-hint">
+              Cada ajuste recalculará automáticamente el total y validará la disponibilidad.
+            </p>
+          </div>
+
+          <!-- Mensajes de disponibilidad / errores -->
+          <div class="reserva-card__edit-mensaje" data-edit-mensaje>
+            <!-- JS mostrará aquí mensajes sobre disponibilidad y sugerencias -->
+          </div>
+
+          <!-- Acciones finales -->
+          <div class="reserva-card__edit-acciones">
+            <button type="button"
+                    class="btn btn-sm btn--primary js-aplicar-cambio-fechas">
+              Aplicar cambio de fechas
+            </button>
+
+            <button type="button"
+                    class="btn btn-sm btn--danger js-cambiar-totalmente">
+              Cancelar y crear una nueva reserva
+            </button>
+
+            <button type="button"
+                    class="btn btn-sm btn--ghost js-cerrar-edicion">
+              Cerrar
+            </button>
+          </div>
+        </div>
+        {% endif %}
+
       </article>
       {% endfor %}
 
@@ -160,4 +263,5 @@
 
 {% block scripts %}
   <script src="{{ url_for('static', filename='js/mis_reservas.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/modificar_reserva.js') }}"></script>
 {% endblock %}

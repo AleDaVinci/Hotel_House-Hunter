@@ -19,6 +19,7 @@ from app.routes.main_routes import main_bp          # Rutas principales (landing
 from app.routes.auth_routes import auth_bp          # Login / Logout
 from app.routes.reserva_routes import reserva_bp    # Búsqueda de habitaciones / precios
 from app.routes.mis_reservas_routes import mis_reservas_bp  # Vista "Mis reservas" cliente
+from app.routes.modificar_reserva_routes import modificar_reserva_bp  # Modificar reservas existentes
 
 # Crear instancia de la aplicación Flask
 app = Flask(__name__)
@@ -32,6 +33,7 @@ app.register_blueprint(main_bp)
 app.register_blueprint(auth_bp)
 app.register_blueprint(reserva_bp)
 app.register_blueprint(mis_reservas_bp)
+app.register_blueprint(modificar_reserva_bp)
 
 
 if __name__ == "__main__":

@@ -760,6 +760,62 @@ body {
   font-size: 0.95rem;
   line-height: 1.5;
 }
+/* Panel de modificación dentro de cada reserva: oculto por defecto */
+.reserva-card__edit {
+  display: none;                 /* ← clave: oculto inicialmente */
+  margin-top: 0.9rem;
+  padding-top: 0.9rem;
+  border-top: 1px dashed rgba(148, 163, 184, 0.6);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+/* Estado visible cuando JS lo abre */
+.reserva-card__edit--open {
+  display: block;
+}
+
+.reserva-card__edit-resumen {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0.6rem 1rem;
+  margin-bottom: 0.8rem;
+}
+
+.reserva-card__edit-controles {
+  margin-top: 0.6rem;
+  margin-bottom: 0.6rem;
+}
+
+.edit-controles-botones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.3rem;
+}
+
+.reserva-card__edit-hint {
+  margin: 0.4rem 0 0;
+  font-size: 0.78rem;
+  opacity: 0.8;
+}
+
+.reserva-card__edit-mensaje {
+  margin-top: 0.5rem;
+  font-size: 0.82rem;
+}
+
+.reserva-card__edit-acciones {
+  margin-top: 0.8rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  justify-content: center;      
+  align-items: center;
+  text-align: center;
+}
+
+
 
 /* ----------- CARD DE RESERVA ----------- */
 
