@@ -66,6 +66,7 @@ def _habitacion_disponible(id_habitacion, id_reserva_actual, fecha_ini, fecha_fi
       FROM reserva AS r
       WHERE r.id_habitacion = %s
         AND r.id_reserva <> %s
+        AND r.estado IN ('pendiente', 'confirmada')
         AND r.fecha_check_in  < %s
         AND r.fecha_check_out > %s
       LIMIT 1

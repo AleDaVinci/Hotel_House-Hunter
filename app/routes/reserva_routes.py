@@ -89,22 +89,23 @@ def buscar_habitaciones():
     #
     # Una habitación está disponible si NO EXISTE reserva que cumpla eso.
     sql = """
-        SELECT 
-            h.id_habitacion,
-            h.nombre,
-            h.descripcion,
-            h.capacidad_personas AS capacidad,
-            h.imagen_principal
+    SELECT 
+        h.id_habitacion,
+        h.nombre,
+        h.descripcion,
+        h.capacidad_personas AS capacidad,
+        h.imagen_principal
         FROM habitacion AS h
         WHERE h.capacidad_personas >= %s
-          AND h.es_activa = 1
-          AND NOT EXISTS (
-              SELECT 1
-              FROM reserva AS r
-              WHERE r.id_habitacion = h.id_habitacion
-                AND r.fecha_check_in  < %s
-                AND r.fecha_check_out > %s
-          )
+        AND h.es_activa = 1
+        AND NOT EXISTS (
+          SELECT 1
+          FROM reserva AS r
+          WHERE r.id_habitacion = h.id_habitacion
+            AND r.estado IN ('pendiente', 'confirmada')
+            AND r.fecha_check_in  < %s
+            AND r.fecha_check_out > %s
+      )
     """
 
     params = (pasajeros, fecha_fin, fecha_inicio)
