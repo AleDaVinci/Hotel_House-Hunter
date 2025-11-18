@@ -14,7 +14,7 @@
 
 import unittest
 from unittest.mock import patch
-from flask import Flask, session
+from flask import Flask, Blueprint
 from app.routes.reserva_routes import reserva_bp
 
 
@@ -35,11 +35,9 @@ class FakeCursor:
         self.last_params = params or ()
 
     def fetchone(self):
-        # No lo necesitamos para este test, pero lo dejamos definido.
         return None
 
     def fetchall(self):
-        # No lo necesitamos para este test.
         return []
 
     def close(self):
@@ -60,7 +58,6 @@ class FakeConnection:
         self.closed = False
 
     def cursor(self, dictionary=False):
-        # ignoramos "dictionary" en este fake
         return self.cursor_obj
 
     def commit(self):
@@ -81,15 +78,23 @@ class TestCrearReservaRoute(unittest.TestCase):
     def setUp(self):
         """
         Crea una app Flask mínima para registrar el blueprint de reservas
-        y usar test_client() en los tests.
+        y un blueprint dummy de 'mis_reservas' para que url_for funcione.
         """
         self.app = Flask(__name__)
         self.app.config["TESTING"] = True
-        # Necesario para poder usar sesiones
         self.app.secret_key = "testing-secret-key"
 
-        # Registrar el blueprint con el prefijo correcto
+        # Blueprint real que estamos testeando
         self.app.register_blueprint(reserva_bp)
+
+        # Blueprint dummy para que url_for("mis_reservas.mis_reservas") no falle
+        mis_reservas_bp = Blueprint("mis_reservas", __name__)
+
+        @mis_reservas_bp.route("/mis-reservas")
+        def mis_reservas():
+            return "OK"
+
+        self.app.register_blueprint(mis_reservas_bp)
 
         self.client = self.app.test_client()
 
