@@ -925,6 +925,7 @@ body {
   border-radius: 0.9rem;
   box-shadow: 0 18px 35px rgba(0, 0, 0, 0.35);
   border: 1px solid rgba(148, 163, 184, 0.35);
+  position: relative;  
 }
 
 .reserva-card__header {
@@ -945,6 +946,106 @@ body {
   margin: 0.15rem 0 0;
   font-size: 0.85rem;
   opacity: 0.85;
+}
+/* Bloque que agrupa estado de reserva + estado de pago */
+.reserva-card__status {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.3rem;
+}
+
+/* Botón pill "Pago: Impago" */
+.reserva-card__payment-status {
+  padding: 0.25rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  border: none;
+  cursor: pointer;
+  background: rgba(148, 163, 184, 0.16);
+  color: #e5e7eb;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  transition: background 0.18s ease, box-shadow 0.18s ease, transform 0.1s ease;
+}
+
+/* Estado visual para "Impago" (amarillo suave) */
+.estado-pago--impago {
+  background: rgba(234, 179, 8, 0.13);
+  color: #facc15;
+}
+
+.reserva-card__payment-status:hover {
+  background: rgba(234, 179, 8, 0.22);
+  box-shadow: 0 0 0 1px rgba(234, 179, 8, 0.45);
+  transform: translateY(-1px);
+}
+
+.reserva-card__payment-status:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+/* ================================
+   POPOVER: CONDICIONES DE PAGO
+   ================================ */
+
+.reserva-card__payment-info {
+  position: absolute;
+  top: 0.75rem;
+  right: 1.3rem;
+  max-width: 320px;
+  padding: 0.9rem 1rem;
+  border-radius: 0.8rem;
+  background: rgba(15, 23, 42, 0.97); /* azul oscuro, similar a login */
+  border: 1px solid rgba(148, 163, 184, 0.8);
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.65);
+  font-size: 0.82rem;
+  line-height: 1.5;
+  z-index: 20;
+  display: none;  /* oculto por defecto */
+}
+
+/* Clase que JS agrega para mostrar el popover */
+.reserva-card__payment-info--open {
+  display: block;
+}
+
+.reserva-card__payment-info-title {
+  margin: 0 0 0.4rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.reserva-card__payment-info-list-title {
+  margin: 0.4rem 0 0.15rem;
+  font-weight: 500;
+  font-size: 0.8rem;
+  opacity: 0.9;
+}
+
+.reserva-card__payment-info-list {
+  margin: 0 0 0.4rem 1rem;
+  padding: 0;
+  list-style: disc;
+}
+
+.reserva-card__payment-info-list li {
+  margin-bottom: 0.15rem;
+}
+
+.reserva-card__payment-info-warning {
+  margin: 0.2rem 0 0.4rem;
+  font-size: 0.8rem;
+  color: #f97316; /* naranja suave para advertencia */
+}
+
+.reserva-card__payment-info-note {
+  margin: 0.2rem 0;
+  font-size: 0.8rem;
+  opacity: 0.9;
 }
 
 /* Estado de la reserva (pill) */
