@@ -35,12 +35,17 @@ vistas de la aplicación. - Define el layout general:
 
           <!-- CENTRO: barra de búsqueda -->
           <div class="navbar__center">
-            <form class="navbar__search" action="#" method="get">
+            <form
+              class="navbar__search"
+              action="{{ url_for('mis_reservas.mis_reservas') }}"
+              method="get"
+            >
               <input
                 type="text"
-                name="q"
-                placeholder="Buscar mis reservas..."
+                name="codigo"
+                placeholder="Buscar reserva por código..."
                 class="navbar__search-input"
+                value="{{ request.args.get('codigo', '') if request else '' }}"
               />
             </form>
           </div>
@@ -53,7 +58,9 @@ vistas de la aplicación. - Define el layout general:
             >
               Mis reservas
             </a>
-            <a href="{{ url_for('main.contacto') }}" class="navbar__link">Contáctenos</a>
+            <a href="{{ url_for('main.contacto') }}" class="navbar__link"
+              >Contáctenos</a
+            >
             <a href="{{ url_for('auth.logout') }}" class="btn btn--outline"
               >Logout</a
             >
@@ -65,9 +72,15 @@ vistas de la aplicación. - Define el layout general:
           <div class="navbar__center"></div>
 
           <div class="navbar__right">
-            <a href="{{ url_for('auth.login') }}" class="btn btn--ghost">Login</a>
-           <a href="{{ url_for('auth.signup') }}" class="btn btn--primary">Sign up</a>
-           <a href="{{ url_for('main.contacto') }}" class="navbar__link">Contáctenos</a>
+            <a href="{{ url_for('auth.login') }}" class="btn btn--ghost"
+              >Login</a
+            >
+            <a href="{{ url_for('auth.signup') }}" class="btn btn--primary"
+              >Sign up</a
+            >
+            <a href="{{ url_for('main.contacto') }}" class="navbar__link"
+              >Contáctenos</a
+            >
           </div>
           {% endif %}
         </nav>

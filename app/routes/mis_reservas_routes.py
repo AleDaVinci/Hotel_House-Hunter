@@ -6,6 +6,8 @@
 #   - Permitir acciones sobre cada reserva:
 #       * Cancelar (estado = 'cancelada')
 #       * Eliminar del listado (soft delete con es_visible = 0)
+#   - Permitir buscar una reserva por código (desde el navbar) y
+#     resaltar la card encontrada en la vista.
 #
 # Alcance:
 #   - Este módulo trabaja SOLO con reservas del cliente final.
@@ -20,6 +22,7 @@ from flask import (
     url_for,
     session,
     flash,
+    request,   # <-- agregado para leer parámetros GET (codigo de búsqueda)
 )
 from database.connection import get_connection
 
@@ -34,6 +37,10 @@ mis_reservas_bp = Blueprint("mis_reservas", __name__)
 #   - Mostrar todas las reservas del usuario logueado.
 #   - Solo mostrar reservas con es_visible = 1 (soft delete aplicado).
 #   - Si no hay sesión, redirigir al login.
+#   - Si viene un parámetro GET ?codigo=XXX:
+#       * Intentar encontrar esa reserva en la lista del usuario.
+#       * Si se encuentra, mandar highlight_id para resaltar la card.
+#       * Si no, mandar mensaje_busqueda avisando que no se encontró.
 # -----------------------------------------------------------------------------
 @mis_reservas_bp.route("/mis-reservas", methods=["GET"])
 def mis_reservas():
@@ -45,7 +52,14 @@ def mis_reservas():
 
     id_usuario = usuario["id"]
 
-    # 2) Conectar a la BD y traer reservas del usuario
+    # 2) Leer parámetro de búsqueda proveniente del navbar (opcional)
+    #    /mis-reservas?codigo=ABC123
+    codigo_busqueda = request.args.get("codigo", "").strip()
+
+    highlight_id = None        # id_reserva a resaltar (si se encuentra)
+    mensaje_busqueda = None    # mensaje a mostrar si no se encuentra nada
+
+    # 3) Conectar a la BD y traer reservas del usuario
     conn = get_connection()
     cursor = conn.cursor(dictionary=True)
 
@@ -82,11 +96,26 @@ def mis_reservas():
         cursor.close()
         conn.close()
 
-    # 3) Renderizar la plantilla con la lista de reservas
+    # 4) Si se hizo una búsqueda por código, intentamos encontrar la reserva
+    if codigo_busqueda and reservas:
+        for r in reservas:
+            codigo_actual = (r.get("codigo_reserva") or "").strip()
+            if codigo_actual.lower() == codigo_busqueda.lower():
+                highlight_id = r.get("id_reserva")
+                break
+
+        if highlight_id is None:
+            mensaje_busqueda = (
+                f"No se encontró ninguna reserva con el código: {codigo_busqueda}"
+            )
+
+    # 5) Renderizar la plantilla con la lista de reservas + info de búsqueda
     return render_template(
         "mis_reservas.html",
         usuario=usuario,
         reservas=reservas,
+        highlight_id=highlight_id,
+        mensaje_busqueda=mensaje_busqueda,
     )
 
 
@@ -140,7 +169,7 @@ def cancelar_reserva(id_reserva):
 
 
 # -----------------------------------------------------------------------------
-# Ruta: POST /reservas/<id_reserva>/eliminar
+# Ruta: POST /reservas/<int:id_reserva>/eliminar
 # Responsabilidad:
 #   - Soft delete: marcar la reserva como "no visible" para el usuario,
 #     sin borrarla físicamente de la base de datos.

@@ -33,30 +33,37 @@
     </a>
   </div>
 
+  {# === Mensaje de resultado de búsqueda (si corresponde) === #}
+  {% if mensaje_busqueda %}
+    <div class="alert alert--search">
+      {{ mensaje_busqueda }}
+    </div>
+  {% endif %}
+
   {# === Toolbar de filtros y orden === #}
   {% if reservas and reservas|length > 0 %}
-  <div class="misreservas-filtros">
-    <div class="misreservas-filtro-group">
-      <label for="orden-reservas">Ordenar por:</label>
-      <select id="orden-reservas">
-        <option value="checkin_asc">Check-in (más antiguo primero)</option>
-        <option value="checkin_desc">Check-in (más reciente primero)</option>
-        <option value="monto_asc">Total (menor a mayor)</option>
-        <option value="monto_desc">Total (mayor a menor)</option>
-      </select>
-    </div>
+    <div class="misreservas-filtros">
+      <div class="misreservas-filtro-group">
+        <label for="orden-reservas">Ordenar por:</label>
+        <select id="orden-reservas">
+          <option value="checkin_asc">Check-in (más antiguo primero)</option>
+          <option value="checkin_desc">Check-in (más reciente primero)</option>
+          <option value="monto_asc">Total (menor a mayor)</option>
+          <option value="monto_desc">Total (mayor a menor)</option>
+        </select>
+      </div>
 
-    <div class="misreservas-filtro-group">
-      <label for="filtro-estado">Filtrar por estado:</label>
-      <select id="filtro-estado">
-        <option value="todos">Todos</option>
-        <option value="confirmada">Confirmada</option>
-        <option value="pendiente">Pendiente</option>
-        <option value="cancelada">Cancelada</option>
-        <option value="finalizada">Finalizada</option>
-      </select>
+      <div class="misreservas-filtro-group">
+        <label for="filtro-estado">Filtrar por estado:</label>
+        <select id="filtro-estado">
+          <option value="todos">Todos</option>
+          <option value="confirmada">Confirmada</option>
+          <option value="pendiente">Pendiente</option>
+          <option value="cancelada">Cancelada</option>
+          <option value="finalizada">Finalizada</option>
+        </select>
+      </div>
     </div>
-  </div>
   {% endif %}
 
   {% if reservas and reservas|length > 0 %}
@@ -64,14 +71,16 @@
     <div class="misreservas-grid">
 
       {% for r in reservas %}
-      <article class="reserva-card"
-               data-reserva-id="{{ r.id_reserva }}"
-               data-fecha-check-in="{{ r.fecha_check_in.strftime('%Y-%m-%d') }}"
-               data-fecha-check-out="{{ r.fecha_check_out.strftime('%Y-%m-%d') }}"
-               data-monto-total="{{ '%.2f'|format(r.monto_total) }}"
-               data-estado="{{ r.estado }}">
+      <article
+        class="reserva-card {% if highlight_id and r.id_reserva == highlight_id %}reserva-card--highlight{% endif %}"
+        data-reserva-id="{{ r.id_reserva }}"
+        data-fecha-check-in="{{ r.fecha_check_in.strftime('%Y-%m-%d') }}"
+        data-fecha-check-out="{{ r.fecha_check_out.strftime('%Y-%m-%d') }}"
+        data-monto-total="{{ '%.2f'|format(r.monto_total) }}"
+        data-estado="{{ r.estado }}"
+      >
         
-                <!-- ENCABEZADO -->
+        <!-- ENCABEZADO -->
         <header class="reserva-card__header">
           <div>
             <h3 class="reserva-card__title">
@@ -96,7 +105,6 @@
             </button>
           </div>
         </header>
-
 
         <!-- CUERPO / INFO PRINCIPAL -->
         <div class="reserva-card__body">
@@ -138,7 +146,7 @@
 
         </div>
 
-                <!-- FOOTER -->
+        <!-- FOOTER -->
         <footer class="reserva-card__footer">
           <button
             type="button"
@@ -214,7 +222,6 @@
           </p>
         </div>
 
-
         <!-- DETALLE OCULTO -->
         <div class="reserva-card__details">
           <p class="reserva-card__details-title">Detalle de la reserva</p>
@@ -259,7 +266,7 @@
             <div>
               <span class="reserva-card__label">Fechas nuevas</span>
               <div class="reserva-card__value edit-fechas-nuevas">
-                
+                {# JS rellenará esto al simular cambios #}
               </div>
             </div>
 
@@ -273,14 +280,14 @@
             <div>
               <span class="reserva-card__label">Nuevo total estimado</span>
               <div class="reserva-card__value edit-total-nuevo">
-                
+                {# JS rellenará #}
               </div>
             </div>
 
             <div>
               <span class="reserva-card__label">Diferencia</span>
               <div class="reserva-card__value edit-diferencia">
-                
+                {# JS rellenará #}
               </div>
             </div>
           </div>
